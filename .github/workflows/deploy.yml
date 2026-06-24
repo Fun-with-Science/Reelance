@@ -31,5 +31,6 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./dist/ # Uploads only the compiled files
-        server-dir: /public_html/__reelance/ # Target folder on Hostinger
+        server-dir: __reelance/ # Target folder on Hostinger
+
 
