@@ -1,0 +1,34 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - main # Triggers when you push to main branch
+
+jobs:
+  web-deploy:
+    name: Build & Deploy via FTP
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Upload dist folder to Hostinger
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/ # Uploads only the compiled files
+        server-dir: /public_html/reelance/ # Target folder on Hostinger

@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reelance Admin — Platform Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Admin specific custom overrides & styling */
+    .admin-container {
+      max-width: var(--maxw);
+      margin: 40px auto;
+      padding: 0 24px;
+      min-height: 80vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .admin-login-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70vh;
+    }
+
+    .admin-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .admin-logo .logo-mark {
+      width: 12px;
+      height: 12px;
+      background: var(--orange);
+      border-radius: 3px;
+      transform: rotate(45deg);
+      display: inline-block;
+    }
+
+    .admin-badge {
+      background: rgba(255, 123, 61, 0.12);
+      color: var(--orange);
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-left: 8px;
+      border: 1px solid rgba(255, 123, 61, 0.2);
+    }
+
+    /* Dashboard Layout */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+      margin-top: 24px;
+    }
+
+    .admin-sidebar {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      height: fit-content;
+      position: sticky;
+      top: 40px;
+    }
+
+    .admin-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .admin-menu-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .admin-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    .admin-menu-btn.active {
+      background: rgba(255, 123, 61, 0.1);
+      color: var(--orange);
+      border: 1px solid rgba(255, 123, 61, 0.2);
+    }
+
+    .admin-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* Stat panel widgets */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted-2);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text);
+    }
+
+    /* Admin View panel */
+    .view-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+
+    .view-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .view-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    /* Table styles */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .admin-table th {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted-2);
+      text-transform: uppercase;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line-2);
+      font-weight: 700;
+    }
+
+    .admin-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Badge styles */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+
+    .badge-client {
+      background: rgba(52, 224, 204, 0.12);
+      color: var(--teal);
+    }
+
+    .badge-creator {
+      background: rgba(255, 123, 61, 0.12);
+      color: var(--orange);
+    }
+
+    .badge-admin {
+      background: rgba(61, 255, 154, 0.12);
+      color: var(--green);
+    }
+
+    /* Search & Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .filter-input:focus {
+      border-color: var(--orange);
+    }
+
+    .filter-select {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Message Item Styles */
+    .msg-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg-item {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .msg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .msg-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .msg-subject {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .msg-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    /* Actions & Utility */
+    .btn-delete {
+      background: rgba(234, 67, 53, 0.1);
+      border: 1px solid rgba(234, 67, 53, 0.2);
+      color: #ea4335;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-delete:hover {
+      background: rgba(234, 67, 53, 0.2);
+      border-color: rgba(234, 67, 53, 0.4);
+    }
+
+    /* Alert Banner styling */
+    .alert-banner {
+      background: rgba(255, 123, 61, 0.12);
+      border: 1px solid rgba(255, 123, 61, 0.3);
+      color: var(--orange-soft);
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .alert-banner code {
+      font-family: 'Space Mono', monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #ff9d57;
+    }
+
+    /* Toast styling */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--panel);
+      border: 1px solid var(--teal);
+      color: var(--text);
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Header Nav */
+    .admin-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .admin-nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .admin-nav-logo .logo-mark {
+      width: 14px;
+      height: 14px;
+      background: var(--grade);
+      border-radius: 4px;
+    }
+
+    .admin-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-user-tag {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--line-2);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--muted-2);
+    }
+
+    /* Pulse spinner */
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.05);
+      border-top: 3px solid var(--orange);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 0.8s linear infinite;
+      margin: 40px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ---- RESPONSIVE MEDIA QUERIES ---- */
+    @media (max-width: 860px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .admin-sidebar {
+        position: static;
+        width: 100%;
+        padding: 16px;
+      }
+      .admin-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .admin-menu-btn {
+        white-space: nowrap;
+        flex: 1;
+        justify-content: center;
+        padding: 10px 14px;
+      }
+    }
+    
+    @media (max-width: 520px) {
+      .admin-container {
+        padding: 10px;
+      }
+      .admin-nav {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 14px;
+      }
+      .admin-nav-right {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+      }
+      .btn-logout {
+        width: 100%;
+        justify-content: center;
+      }
+      .view-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+      }
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .filter-input {
+        width: 100%;
+      }
+      .filter-select {
+        width: 100%;
+      }
+      .admin-table th, .admin-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+      }
+      .admin-sidebar {
+        padding: 12px !important;
+        border-radius: 14px !important;
+      }
+      .admin-menu-btn {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      .admin-grid {
+        gap: 16px;
+        margin-top: 16px;
+      }
+    }
+    @media (max-width: 390px) {
+      .admin-container {
+        padding: 8px;
+      }
+      .view-card {
+        padding: 12px !important;
+      }
+      .admin-table th, .admin-table td {
+        padding: 6px 4px;
+        font-size: 11px;
+      }
+      .admin-menu-btn {
+        padding: 7px 8px;
+        font-size: 12px;
+      }
+      .admin-nav .logo {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-container">
+  <!-- 1. LOGIN INTERFACE -->
+  <div class="admin-login-wrap" id="loginWrap">
+    <div class="admin-card">
+      <div class="admin-logo">
+        <span class="logo-mark"></span>
+        Reelance<span class="admin-badge">ADMIN</span>
+      </div>
+      <h3 style="text-align:center;font-size:18px;margin-bottom:8px">System Administrator Portal</h3>
+      <p style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:24px">Access restricted to platform managers.</p>
+      
+      <div class="alert-banner" id="loginAlert" style="display:none"></div>
+
+      <div class="ifield" style="margin-bottom:16px">
+        <label for="adminEmail">Email address</label>
+        <input type="email" id="adminEmail" placeholder="admin@reelance.com" autocomplete="email" style="width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;color:var(--text);outline:none" />
+      </div>
+      <div class="ifield" style="margin-bottom:24px">
+        <label for="adminPass">Password</label>
+        <input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password" style="width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px;color:var(--text);outline:none" />
+      </div>
+
+      <button class="btn btn-primary" id="loginSubmitBtn" style="width:100%;justify-content:center">
+        Log In to Panel
+      </button>
+      <div style="text-align:center;margin-top:16px">
+        <a href="/" style="font-size:13px;color:var(--teal);text-decoration:underline">← Return to Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MAIN DASHBOARD INTERFACE (Hidden on load) -->
+  <div id="dashWrap" style="display:none">
+    <!-- Header Nav -->
+    <header class="admin-nav">
+      <div class="admin-nav-logo">
+        <span class="logo-mark"></span>
+        Reelance <span class="admin-badge">ADMIN CONTROL</span>
+      </div>
+      <div class="admin-nav-right">
+        <span class="admin-user-tag" id="adminUserTag">admin@reelance.com</span>
+        <button class="btn-logout" id="dashLogoutBtn">Log Out</button>
+      </div>
+    </header>
+
+    <!-- Content Columns -->
+    <div class="admin-grid">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <h4 style="font-family:'Space Mono';font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:0.05em">Navigation</h4>
+        <div class="admin-menu">
+          <button class="admin-menu-btn active" id="menuBtnOverview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            Overview Panel
+          </button>
+          <button class="admin-menu-btn" id="menuBtnUsers">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Registered Users
+          </button>
+          <button class="admin-menu-btn" id="menuBtnMessages">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Inquiry Messages
+          </button>
+          <button class="admin-menu-btn" id="menuBtnTickets">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg>
+            Support Tickets
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main panels area -->
+      <main class="admin-content">
+        <!-- Error Setup Banner (Visible if tables missing) -->
+        <div class="alert-banner" id="schemaSetupAlert" style="display:none">
+          <strong>Database Sync Issue Detected:</strong> One or more Supabase database tables are not accessible. Please run the SQL setup commands from <a href="implementation_plan.md" style="color:#FFF;text-decoration:underline">implementation_plan.md</a> inside your Supabase dashboard SQL editor.
+        </div>
+
+        <!-- PANEL A: OVERVIEW -->
+        <div class="admin-panel" id="panelOverview">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-label">Total Registered Accounts</span>
+              <div class="stat-value" id="statProfiles">0</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Platform Creators</span>
+              <div class="stat-value" style="color:var(--orange)" id="statCreators">0</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Inquiry Messages Sent</span>
+              <div class="stat-value" style="color:var(--teal)" id="statMessages">0</div>
+            </div>
+          </div>
+          
+          <div class="view-card" style="margin-top:24px">
+            <h3 style="margin-top:0;font-size:20px;margin-bottom:12px">Welcome to the Reelance Administrator Control</h3>
+            <p style="color:var(--muted);font-size:15px;line-height:1.7">
+              This panel enables direct auditing of platform metrics and user interaction tables. You can monitor registrations, verify profiles, and audit client-to-creator communications securely connected to your live Supabase backend.
+            </p>
+            <div style="margin-top:24px;border-top:1px solid var(--line);padding-top:20px;display:flex;gap:12px">
+              <a href="dashboard" class="btn btn-ghost" style="padding:10px 16px;font-size:13px">Client/Creator Panel</a>
+              <a href="/" class="btn btn-primary" style="padding:10px 16px;font-size:13px">Go to Marketplace</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL B: USERS DIRECTORY -->
+        <div class="admin-panel" id="panelUsers" style="display:none">
+          <div class="view-card">
+            <div class="view-header">
+              <div class="view-title">Registered Accounts Directory</div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+              <input type="text" class="filter-input" id="userSearch" placeholder="Search by name or email..." />
+              <select class="filter-select" id="roleSelect">
+                <option value="all">All Roles</option>
+                <option value="client">Clients</option>
+                <option value="creator">Creators</option>
+                <option value="admin">Administrators</option>
+              </select>
+            </div>
+
+            <!-- Results Table -->
+            <div id="usersLoading" class="spinner"></div>
+            <div class="table-container" id="usersTableWrap" style="display:none">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Role Badge</th>
+                    <th>Joined Date</th>
+                    <th>Control Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Dynamic rows go here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL C: MESSAGES ACTIVITY -->
+        <div class="admin-panel" id="panelMessages" style="display:none">
+          <div class="view-card">
+            <div class="view-header">
+              <div class="view-title">Platform Inquiry Activity Audit</div>
+            </div>
+
+            <!-- Messages Stream -->
+            <div id="messagesLoading" class="spinner"></div>
+            <div class="msg-list" id="messagesListWrap" style="display:none">
+              <!-- Dynamic msg elements go here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL D: SUPPORT TICKETS -->
+        <div class="admin-panel" id="panelTickets" style="display:none">
+          <div class="view-card">
+            <div class="view-header">
+              <div class="view-title">User Support Tickets</div>
+            </div>
+
+            <!-- Tickets Stream -->
+            <div id="ticketsLoading" class="spinner"></div>
+            <div class="msg-list" id="ticketsListWrap" style="display:none">
+              <!-- Dynamic tickets go here -->
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Supabase CDN Script -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* =============================================
+     REELANCE ADMIN PORTAL CONTROLLER — SUPABASE
+     ============================================= */
+  const SUPABASE_URL = 'https://xfgpsojwqvrhznljoxgn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_XfkI8bJIU3eMaCfIxcnSPQ_QePN0lUQ';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // --- State ---
+    let state = {
+      isLoggedIn: false,
+      user: null,
+      profiles: [],
+      creators: [],
+      messages: [],
+      tickets: []
+    };
+
+    // --- DOM Elements ---
+    const loginWrap = document.getElementById('loginWrap');
+    const dashWrap = document.getElementById('dashWrap');
+    
+    const adminEmail = document.getElementById('adminEmail');
+    const adminPass = document.getElementById('adminPass');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    const loginAlert = document.getElementById('loginAlert');
+    const schemaSetupAlert = document.getElementById('schemaSetupAlert');
+    
+    const adminUserTag = document.getElementById('adminUserTag');
+    const dashLogoutBtn = document.getElementById('dashLogoutBtn');
+    
+    const menuBtnOverview = document.getElementById('menuBtnOverview');
+    const menuBtnUsers = document.getElementById('menuBtnUsers');
+    const menuBtnMessages = document.getElementById('menuBtnMessages');
+    const menuBtnTickets = document.getElementById('menuBtnTickets');
+    
+    const panelOverview = document.getElementById('panelOverview');
+    const panelUsers = document.getElementById('panelUsers');
+    const panelMessages = document.getElementById('panelMessages');
+    const panelTickets = document.getElementById('panelTickets');
+
+    const statProfiles = document.getElementById('statProfiles');
+    const statCreators = document.getElementById('statCreators');
+    const statMessages = document.getElementById('statMessages');
+
+    const userSearch = document.getElementById('userSearch');
+    const roleSelect = document.getElementById('roleSelect');
+    const usersLoading = document.getElementById('usersLoading');
+    const usersTableWrap = document.getElementById('usersTableWrap');
+    const usersTableBody = document.getElementById('usersTableBody');
+
+    const messagesLoading = document.getElementById('messagesLoading');
+    const messagesListWrap = document.getElementById('messagesListWrap');
+
+    const ticketsLoading = document.getElementById('ticketsLoading');
+    const ticketsListWrap = document.querySelector('#panelTickets #ticketsListWrap');
+
+    // Toast control
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Loader helper
+    function setButtonLoading(btn, loading, text) {
+      if (loading) {
+        btn.disabled = true;
+        btn.dataset.origText = btn.textContent;
+        btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .7s linear infinite">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          ${text || 'Loading...'}
+        </span>`;
+      } else {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.origText || text || 'Submit';
+      }
+    }
+
+    // --- Tab Navigation ---
+    function switchTab(activeBtn, activePanel) {
+      [menuBtnOverview, menuBtnUsers, menuBtnMessages, menuBtnTickets].forEach(btn => {
+        if (btn) btn.classList.remove('active');
+      });
+      [panelOverview, panelUsers, panelMessages, panelTickets].forEach(panel => {
+        if (panel) panel.style.display = 'none';
+      });
+      
+      if (activeBtn) activeBtn.classList.add('active');
+      if (activePanel) activePanel.style.display = 'block';
+    }
+
+    menuBtnOverview.addEventListener('click', () => switchTab(menuBtnOverview, panelOverview));
+    menuBtnUsers.addEventListener('click', () => switchTab(menuBtnUsers, panelUsers));
+    menuBtnMessages.addEventListener('click', () => switchTab(menuBtnMessages, panelMessages));
+    if (menuBtnTickets) {
+      menuBtnTickets.addEventListener('click', () => {
+        switchTab(menuBtnTickets, panelTickets);
+        renderTickets();
+      });
+    }
+
+    // --- Init Application Session ---
+    async function initAdmin() {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (session && session.user) {
+          // Fetch user profile from profiles table
+          const { data: profile, error: pError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (pError || !profile) {
+            // No profile or schema error
+            await supabase.auth.signOut();
+            showLoginView('Access Denied. Account profile not found.');
+            return;
+          }
+
+          if (profile.role !== 'admin') {
+            await supabase.auth.signOut();
+            showLoginView('Access Denied. Your account does not have administrator privileges.');
+            return;
+          }
+
+          state.isLoggedIn = true;
+          state.user = {
+            id: session.user.id,
+            email: session.user.email,
+            name: profile.name,
+            role: profile.role
+          };
+
+          showDashboardView();
+          await fetchSystemData();
+        } else {
+          showLoginView();
+        }
+      } catch (err) {
+        console.error("Dashboard check error:", err);
+        showLoginView('Session check failed. Please refresh the page.');
+      }
+    }
+
+    function showLoginView(errMessage) {
+      loginWrap.style.display = 'flex';
+      dashWrap.style.display = 'none';
+      if (errMessage) {
+        loginAlert.textContent = errMessage;
+        loginAlert.style.display = 'block';
+      } else {
+        loginAlert.style.display = 'none';
+      }
+    }
+
+    function showDashboardView() {
+      loginWrap.style.display = 'none';
+      dashWrap.style.display = 'block';
+      adminUserTag.textContent = state.user.email;
+    }
+
+    // --- Sign In Handler ---
+    loginSubmitBtn.addEventListener('click', async () => {
+      loginAlert.style.display = 'none';
+      const email = adminEmail.value.trim();
+      const pass = adminPass.value;
+
+      if (!email || !pass) {
+        showLoginView('Please enter both admin email and password.');
+        return;
+      }
+
+      setButtonLoading(loginSubmitBtn, true, 'Verifying role...');
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        
+        if (error) {
+          setButtonLoading(loginSubmitBtn, false, 'Log In to Panel');
+          showLoginView('Authentication failed: ' + error.message);
+          return;
+        }
+
+        // Verify role is admin
+        const { data: profile, error: pError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (pError || !profile) {
+          await supabase.auth.signOut();
+          setButtonLoading(loginSubmitBtn, false, 'Log In to Panel');
+          showLoginView('Profile validation error. Database profiles table could be missing or RLS policies active.');
+          return;
+        }
+
+        if (profile.role !== 'admin') {
+          await supabase.auth.signOut();
+          setButtonLoading(loginSubmitBtn, false, 'Log In to Panel');
+          showLoginView('Access Denied. Email belongs to a ' + profile.role + '. Promote this email in your Supabase SQL editor to access.');
+          return;
+        }
+
+        state.isLoggedIn = true;
+        state.user = {
+          id: data.user.id,
+          email: data.user.email,
+          name: profile.name,
+          role: profile.role
+        };
+
+        setButtonLoading(loginSubmitBtn, false, 'Log In to Panel');
+        showDashboardView();
+        await fetchSystemData();
+        showToast('Logged in as Administrator!');
+
+      } catch (err) {
+        setButtonLoading(loginSubmitBtn, false, 'Log In to Panel');
+        showLoginView('Unexpected error: ' + err.message);
+      }
+    });
+
+    // --- Sign Out ---
+    dashLogoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      state = { isLoggedIn: false, user: null, profiles: [], creators: [], messages: [], tickets: [] };
+      showToast('Logged out.');
+      showLoginView();
+    });
+
+    // --- Fetch Supabase Tables ---
+    async function fetchSystemData() {
+      schemaSetupAlert.style.display = 'none';
+      let tableError = false;
+
+      // 1. Fetch profiles
+      const { data: profiles, error: pError } = await supabase
+        .from('profiles')
+        .select('*');
+      if (pError) {
+        console.error("Profiles error:", pError);
+        tableError = true;
+      } else {
+        state.profiles = profiles || [];
+      }
+
+      // 2. Fetch creators
+      const { data: creators, error: cError } = await supabase
+        .from('creators')
+        .select('*');
+      if (cError) {
+        console.error("Creators error:", cError);
+        tableError = true;
+      } else {
+        state.creators = creators || [];
+      }
+
+      // 3. Fetch messages
+      const { data: messages, error: mError } = await supabase
+        .from('messages')
+        .select('*');
+      if (mError) {
+        console.error("Messages error:", mError);
+        tableError = true;
+      } else {
+        state.messages = messages || [];
+      }
+
+      // 4. Fetch support tickets
+      try {
+        const { data: tickets, error: tError } = await supabase
+          .from('support_tickets')
+          .select('*');
+        if (!tError) {
+          state.tickets = tickets || [];
+        } else {
+          console.error("Tickets error:", tError);
+          state.tickets = [];
+        }
+      } catch (err) {
+        console.error("Tickets fetch failed:", err);
+        state.tickets = [];
+      }
+
+      if (tableError) {
+        schemaSetupAlert.style.display = 'block';
+      }
+
+      // Render dashboards
+      renderOverview();
+      renderUsers();
+      renderMessages();
+      renderTickets();
+    }
+
+    // --- Render View: Overview ---
+    function renderOverview() {
+      statProfiles.textContent = state.profiles.length;
+      statCreators.textContent = state.creators.length;
+      statMessages.textContent = state.messages.length;
+    }
+
+    // --- Render View: Users Table ---
+    function renderUsers() {
+      usersLoading.style.display = 'none';
+      usersTableWrap.style.display = 'block';
+      usersTableBody.innerHTML = '';
+
+      const query = userSearch.value.trim().toLowerCase();
+      const roleFilter = roleSelect.value;
+
+      const filtered = state.profiles.filter(p => {
+        const matchesQuery = p.name.toLowerCase().includes(query) || p.email.toLowerCase().includes(query) || p.id.toLowerCase().includes(query);
+        const matchesRole = roleFilter === 'all' || p.role === roleFilter;
+        return matchesQuery && matchesRole;
+      });
+
+      if (filtered.length === 0) {
+        usersTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted)">// no users matched your filters.</td></tr>`;
+        return;
+      }
+
+      // Sort by Joined date desc
+      filtered.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+      filtered.forEach(p => {
+        const date = p.created_at ? new Date(p.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : 'Unknown';
+        
+        let banBtnHTML = '';
+        if (p.id !== state.user.id && p.role !== 'admin') {
+          if (p.is_banned) {
+            const until = p.banned_until ? new Date(p.banned_until).toLocaleDateString('en-IN', { dateStyle: 'short' }) : 'Permanent';
+            banBtnHTML = `<button class="btn-unban" style="background:rgba(52,224,204,0.12);color:var(--teal);border:1px solid rgba(52,224,204,0.2);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:8px">Unban (Until: ${until})</button>`;
+          } else {
+            banBtnHTML = `<button class="btn-ban" style="background:rgba(255,123,61,0.12);color:var(--orange);border:1px solid rgba(255,123,61,0.2);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:8px">Ban User</button>`;
+          }
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono" style="font-size:11px;color:var(--muted-2)" title="${p.id}">${p.id.substring(0, 8)}...</td>
+          <td style="font-weight:600">${p.name}</td>
+          <td><a href="mailto:${p.email}" style="color:var(--teal);text-decoration:underline">${p.email}</a></td>
+          <td><span class="badge badge-${p.role}">${p.role}</span></td>
+          <td style="color:var(--muted)">${date}</td>
+          <td style="white-space:nowrap">
+            ${banBtnHTML}
+            <button class="btn-delete" data-id="${p.id}" ${p.id === state.user.id ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>Delete</button>
+          </td>
+        `;
+        
+        if (p.id !== state.user.id && p.role !== 'admin') {
+          if (p.is_banned) {
+            const ubBtn = tr.querySelector('.btn-unban');
+            if (ubBtn) ubBtn.addEventListener('click', () => unbanUserAccount(p.id, p.name));
+          } else {
+            const bBtn = tr.querySelector('.btn-ban');
+            if (bBtn) bBtn.addEventListener('click', () => banUserAccount(p.id, p.name, p.role));
+          }
+        }
+        
+        tr.querySelector('.btn-delete').addEventListener('click', () => deleteUserAccount(p.id, p.name));
+        usersTableBody.appendChild(tr);
+      });
+    }
+
+    async function banUserAccount(userId, userName, currentRole) {
+      if (userId === state.user.id) {
+        alert("You cannot suspend yourself!");
+        return;
+      }
+      
+      const durationStr = prompt(`Suspend ${userName}?\nEnter duration in months (e.g. 2 or 3. Enter 0 for permanent suspension):`, "2");
+      if (durationStr === null) return;
+      
+      const months = parseInt(durationStr);
+      if (isNaN(months) || months < 0) {
+        alert("Invalid duration.");
+        return;
+      }
+      
+      const reason = prompt("Enter suspension reason:", "Policy violations / bad reviews");
+      if (reason === null) return;
+      
+      let bannedUntil = null;
+      if (months > 0) {
+        const d = new Date();
+        d.setMonth(d.getMonth() + months);
+        bannedUntil = d.toISOString();
+      }
+      
+      const { error: pErr } = await supabase
+        .from('profiles')
+        .update({
+          is_banned: true,
+          banned_until: bannedUntil,
+          ban_reason: reason
+        })
+        .eq('id', userId);
+        
+      if (pErr) {
+        showToast("Failed to suspend profile: " + pErr.message);
+        return;
+      }
+      
+      if (currentRole === 'creator') {
+        await supabase
+          .from('creators')
+          .update({ available: false })
+          .eq('id', userId);
+      }
+      
+      showToast(`${userName} suspended successfully.`);
+      await fetchSystemData();
+    }
+    
+    async function unbanUserAccount(userId, userName) {
+      const confirmUnban = confirm(`Lift suspension for ${userName}?`);
+      if (!confirmUnban) return;
+      
+      const { error: pErr } = await supabase
+        .from('profiles')
+        .update({
+          is_banned: false,
+          banned_until: null,
+          ban_reason: null
+        })
+        .eq('id', userId);
+        
+      if (pErr) {
+        showToast("Failed to lift suspension: " + pErr.message);
+        return;
+      }
+      
+      showToast(`Suspension lifted for ${userName}.`);
+      await fetchSystemData();
+    }
+
+    function renderTickets() {
+      if (ticketsLoading) ticketsLoading.style.display = 'none';
+      if (ticketsListWrap) {
+        ticketsListWrap.style.display = 'flex';
+        ticketsListWrap.innerHTML = '';
+
+        if (!state.tickets || state.tickets.length === 0) {
+          ticketsListWrap.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 4px">// no support tickets submitted yet.</div>`;
+          return;
+        }
+
+        state.tickets.forEach(t => {
+          const date = t.created_at ? new Date(t.created_at).toLocaleString('en-IN') : 'Unknown';
+          const item = document.createElement('div');
+          item.className = 'msg-item';
+          
+          let statusBadge = '';
+          if (t.status === 'open') {
+            statusBadge = `<span style="background:rgba(255,123,61,0.12);color:var(--orange);font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;border:1px solid rgba(255,123,61,0.2)">OPEN</span>`;
+          } else {
+            statusBadge = `<span style="background:rgba(52,224,204,0.12);color:var(--teal);font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;border:1px solid rgba(52,224,204,0.2)">RESOLVED</span>`;
+          }
+          
+          let actionBtn = '';
+          if (t.status === 'open') {
+            actionBtn = `<button class="btn-delete resolve-btn" style="background:rgba(52,224,204,0.12);color:var(--teal);border:1px solid rgba(52,224,204,0.2);margin-right:8px;float:none;display:inline-block">Resolve</button>`;
+          }
+          
+          item.innerHTML = `
+            <div class="msg-header">
+              <div class="msg-meta">
+                From: <b>${t.name}</b> (<a href="mailto:${t.email}" style="color:var(--teal);text-decoration:underline">${t.email}</a>)
+              </div>
+              <div style="text-align:right; display:flex; align-items:center; gap:8px">
+                ${statusBadge}
+                <span style="font-size:12px;color:var(--muted-2)">${date}</span>
+                ${actionBtn}
+                <button class="btn-delete delete-ticket-btn">Delete</button>
+              </div>
+            </div>
+            <div class="msg-subject">Subject: ${t.subject}</div>
+            <div class="msg-body" style="margin-top:12px">${t.message}</div>
+          `;
+          
+          if (t.status === 'open') {
+            item.querySelector('.resolve-btn').addEventListener('click', () => resolveTicket(t.id));
+          }
+          item.querySelector('.delete-ticket-btn').addEventListener('click', () => deleteTicket(t.id));
+          
+          ticketsListWrap.appendChild(item);
+        });
+      }
+    }
+
+    async function resolveTicket(ticketId) {
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({ status: 'resolved' })
+        .eq('id', ticketId);
+        
+      if (error) {
+        showToast("Failed to resolve ticket: " + error.message);
+      } else {
+        showToast("Ticket marked as resolved.");
+        await fetchSystemData();
+      }
+    }
+    
+    async function deleteTicket(ticketId) {
+      if (!confirm("Are you sure you want to delete this ticket permanently?")) return;
+      
+      const { error } = await supabase
+        .from('support_tickets')
+        .delete()
+        .eq('id', ticketId);
+        
+      if (error) {
+        showToast("Failed to delete ticket: " + error.message);
+      } else {
+        showToast("Ticket deleted permanently.");
+        await fetchSystemData();
+      }
+    }
+
+    // --- Render View: Messages Feed ---
+    function renderMessages() {
+      messagesLoading.style.display = 'none';
+      messagesListWrap.style.display = 'flex';
+      messagesListWrap.innerHTML = '';
+
+      if (state.messages.length === 0) {
+        messagesListWrap.innerHTML = `<div style="text-align:center;color:var(--muted);padding:4px">// no messages exchanged on the platform yet.</div>`;
+        return;
+      }
+
+      // Sort messages by date desc
+      const sorted = [...state.messages].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+      sorted.forEach(m => {
+        const date = m.created_at ? new Date(m.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : 'Unknown';
+        const recipient = state.creators.find(c => String(c.id) === String(m.recipient_id));
+        const recipientName = recipient ? recipient.name : `Creator ID: ${m.recipient_id}`;
+
+        const item = document.createElement('div');
+        item.className = 'msg-item';
+        item.innerHTML = `
+          <div class="msg-header">
+            <div class="msg-meta">
+              From: <b>${m.sender_name}</b> (<a href="mailto:${m.sender_email}" style="color:var(--teal);text-decoration:underline">${m.sender_email}</a>)<br>
+              To: <b>${recipientName}</b>
+            </div>
+            <div style="text-align:right">
+              <span style="font-size:12px;color:var(--muted-2);margin-right:12px">${date}</span>
+              <button class="btn-delete" data-mid="${m.id}" style="padding:4px 10px;font-size:11px">Delete</button>
+            </div>
+          </div>
+          <div class="msg-subject">Project: ${m.subject}</div>
+          <div class="msg-body">${m.body}</div>
+        `;
+        
+        item.querySelector('.btn-delete').addEventListener('click', () => deleteMessageItem(m.id));
+        messagesListWrap.appendChild(item);
+      });
+    }
+
+    // --- Delete User Action ---
+    async function deleteUserAccount(userId, userName) {
+      if (!confirm(`Are you sure you want to delete account profile for "${userName}"? \nWarning: Deleting a profile will cascade and remove their active portfolio references in the database.`)) {
+        return;
+      }
+
+      try {
+        // 1. Delete matching creators row if creator
+        await supabase.from('creators').delete().eq('id', userId);
+        
+        // 2. Delete profiles row
+        const { error } = await supabase.from('profiles').delete().eq('id', userId);
+
+        if (error) {
+          showToast('Delete error: ' + error.message);
+        } else {
+          showToast(`Profile for ${userName} deleted successfully.`);
+          await fetchSystemData();
+        }
+      } catch (err) {
+        showToast('Error deleting user: ' + err.message);
+      }
+    }
+
+    // --- Delete Message Action ---
+    async function deleteMessageItem(msgId) {
+      if (!confirm(`Delete this message inquiry from platform logs?`)) return;
+
+      try {
+        const { error } = await supabase.from('messages').delete().eq('id', msgId);
+        if (error) {
+          showToast('Delete error: ' + error.message);
+        } else {
+          showToast('Message deleted.');
+          await fetchSystemData();
+        }
+      } catch (err) {
+        showToast('Error deleting message: ' + err.message);
+      }
+    }
+
+    // Search and Filter triggers
+    userSearch.addEventListener('input', renderUsers);
+    roleSelect.addEventListener('change', renderUsers);
+
+    // Run Initial session checks
+    initAdmin();
+  });
+</script>
+</body>
+</html>

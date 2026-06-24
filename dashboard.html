@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reelance Dashboard — Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Dashboard specific customizations */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+      margin-top: 40px;
+      min-height: 70vh;
+    }
+    
+    .dash-sidebar {
+      background: var(--panel);
+      border: 1px solid var(--line-2);
+      border-radius: var(--radius);
+      padding: 24px;
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .dash-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    
+    .dash-menu-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      transition: var(--transition);
+      width: 100%;
+    }
+    
+    .dash-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+    
+    .dash-menu-btn.active {
+      background: rgba(52, 224, 204, 0.1);
+      color: var(--teal);
+      border: 1px solid rgba(52, 224, 204, 0.2);
+    }
+    
+    .dash-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    
+    .dash-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    
+    .dash-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .dash-header-row h2 {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    
+    .dash-stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    
+    .dash-stat-card {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+    }
+    
+    .dash-stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted-2);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    
+    .dash-stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 6px;
+    }
+    
+    /* Toggle Switch */
+    .switch-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--muted-2);
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--ink);
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--teal);
+    }
+    
+    input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+    
+    /* Forms inside dashboard */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+    
+    .dash-form label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted-2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    
+    .dash-form input,
+    .dash-form select,
+    .dash-form textarea {
+      width: 100%;
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    
+    .dash-form input:focus,
+    .dash-form select:focus,
+    .dash-form textarea:focus {
+      border-color: var(--teal);
+    }
+    
+    /* Inbox list */
+    .inbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .inbox-item {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .inbox-item:hover {
+      border-color: var(--line-2);
+      transform: translateY(-2px);
+    }
+    
+    .inbox-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+    }
+    
+    .inbox-sender {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .inbox-date {
+      color: var(--muted-2);
+      font-family: 'Space Mono', monospace;
+    }
+    
+    .inbox-subj {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
+    
+    .inbox-body {
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    
+    .badge-client {
+      background: rgba(255, 123, 61, 0.12);
+      color: var(--orange);
+    }
+    
+    .badge-creator {
+      background: rgba(52, 224, 204, 0.12);
+      color: var(--teal);
+    }
+
+    .badge-admin {
+      background: rgba(168, 85, 247, 0.12);
+      color: #a855f7;
+    }
+
+    @media (max-width: 860px) {
+      .dash-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 24px;
+      }
+      .dash-sidebar {
+        position: static;
+        width: 100%;
+        padding: 16px;
+      }
+      .dash-user-info {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        text-align: left !important;
+        gap: 16px;
+        padding-bottom: 16px !important;
+        border-bottom: 1px solid var(--line) !important;
+      }
+      .dash-user-info #sideAvatar {
+        margin: 0 !important;
+      }
+      .dash-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        gap: 8px;
+        margin-top: 16px;
+        scrollbar-width: none;
+      }
+      .dash-menu::-webkit-scrollbar {
+        display: none;
+      }
+      .dash-menu-btn {
+        white-space: nowrap;
+        flex: 1;
+        justify-content: center;
+        padding: 10px 14px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      header.nav nav.links {
+        display: block !important;
+      }
+      header.nav nav.links a {
+        font-size: 13.5px;
+      }
+    }
+    @media (max-width: 520px) {
+      .dash-card {
+        padding: 16px !important;
+        border-radius: 14px !important;
+      }
+      .dash-header-row h2 {
+        font-size: 18px !important;
+      }
+      .dash-stat-row {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      header.nav .nav-cta .btn-ghost {
+        display: none !important;
+      }
+      header.nav nav.links a {
+        font-size: 12.5px;
+      }
+      .dash-sidebar {
+        padding: 12px !important;
+        border-radius: 14px !important;
+      }
+      .dash-menu-btn {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      .dash-content {
+        gap: 20px;
+      }
+      .dash-header-row {
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+      }
+    }
+    @media (max-width: 390px) {
+      .dash-card {
+        padding: 14px !important;
+      }
+      .dash-header-row h2 {
+        font-size: 16px !important;
+      }
+      .dash-menu-btn {
+        padding: 7px 8px;
+        font-size: 12px;
+        gap: 8px;
+      }
+      header.nav nav.links a {
+        font-size: 11.5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-mark"></span>Reel<b>ance</b>
+    </a>
+    <nav class="links" aria-label="Dashboard navigation">
+      <a href="/">← Back to Marketplace</a>
+      <a href="admin" id="adminLink" style="display:none;margin-left:16px;color:#a855f7;font-weight:600">⚙ Admin Panel</a>
+    </nav>
+    <div class="nav-user" style="display:flex">
+      <div class="uchip">
+        <span class="uava" id="navUava">U</span>
+        <span id="navUname">Name</span>
+        <span class="urole-badge" id="navUroleBadge">Role</span>
+      </div>
+      <button class="logout" id="dashLogoutBtn">Log out</button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="wrap dash-grid">
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="dash-user-info" style="text-align:center; padding-bottom:20px; border-bottom:1px solid var(--line)">
+      <div id="sideAvatar" class="avatar" style="width:64px;height:64px;border-radius:18px;font-size:22px;margin:0 auto 12px;background:var(--grade)">U</div>
+      <div>
+        <h3 id="sideName" style="font-size:18px;font-weight:600">User Name</h3>
+        <p id="sideEmail" style="font-size:13px;color:var(--muted);margin-top:2px">user@email.com</p>
+      </div>
+    </div>
+    
+    <div class="dash-menu">
+      <button class="dash-menu-btn active" id="menuBtnOverview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Workspace
+      </button>
+      <button class="dash-menu-btn" id="menuBtnInbox">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+        Inquiries <span id="inboxCountBadge" style="margin-left:auto;background:var(--orange);color:#160d06;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;display:none">0</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT PANELS -->
+  <section class="dash-content">
+    
+    <!-- 1. OVERVIEW / PROFILE PANEL -->
+    <div class="dash-card" id="panelOverview">
+      <div class="dash-header-row">
+        <div>
+          <span class="eyebrow">// account details</span>
+          <h2 id="overviewTitle">Manage Profile</h2>
+        </div>
+      </div>
+      
+      <!-- Stats row -->
+      <div class="dash-stat-row" id="statsRow">
+        <!-- Rendered by JS -->
+      </div>
+      
+      <!-- Creator Availability Toggle -->
+      <div class="switch-wrap" id="visibilityToggleWrap" style="display:none">
+        <div>
+          <h4 style="font-size:16px;font-weight:600">Active Listing</h4>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">Show your card on the home search page so clients can find you.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="visibilityToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <!-- Form Content -->
+      <div class="dash-form">
+        <form id="profileForm" onsubmit="return false;">
+          <div class="form-grid" id="formGridFields">
+            <!-- Fields generated dynamically based on role -->
+          </div>
+          
+          <button class="btn btn-primary" id="saveProfileBtn" style="margin-top:28px">Save Changes</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- 2. INBOX / MESSAGES PANEL -->
+    <div class="dash-card" id="panelInbox" style="display:none">
+      <div class="dash-header-row">
+        <div>
+          <span class="eyebrow">// contact history</span>
+          <h2 id="inboxTitle">Messages</h2>
+        </div>
+      </div>
+      
+      <div class="inbox-list" id="inboxList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+    
+  </section>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- FOOTER -->
+<footer style="margin-top:96px">
+  <div class="wrap" style="text-align:center;color:var(--muted-2);font-family:'Space Mono';font-size:12px;padding:30px 0;border-top:1px solid var(--line)">
+    © 2026 Reelance · Secure Creative Workspace
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="js/ui.js"></script>
+<script type="module">
+  /* =============================================
+     REELANCE DASHBOARD CONTROLLER — SUPABASE
+     ============================================= */
+  
+  // Initialize Supabase Client
+  const SUPABASE_URL = 'https://xfgpsojwqvrhznljoxgn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_XfkI8bJIU3eMaCfIxcnSPQ_QePN0lUQ';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // --- State ---
+    let state = {
+      isLoggedIn: false,
+      user: null,
+      role: 'client',
+      creatorProfile: null
+    };
+
+    // --- DOM Elements ---
+    const navUname = document.getElementById('navUname');
+    const navUava = document.getElementById('navUava');
+    const navUroleBadge = document.getElementById('navUroleBadge');
+    const sideAvatar = document.getElementById('sideAvatar');
+    const sideName = document.getElementById('sideName');
+    const sideEmail = document.getElementById('sideEmail');
+    
+    const panelOverview = document.getElementById('panelOverview');
+    const panelInbox = document.getElementById('panelInbox');
+    const menuBtnOverview = document.getElementById('menuBtnOverview');
+    const menuBtnInbox = document.getElementById('menuBtnInbox');
+    const inboxCountBadge = document.getElementById('inboxCountBadge');
+    
+    const statsRow = document.getElementById('statsRow');
+    const visibilityToggleWrap = document.getElementById('visibilityToggleWrap');
+    const visibilityToggle = document.getElementById('visibilityToggle');
+    const formGridFields = document.getElementById('formGridFields');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const overviewTitle = document.getElementById('overviewTitle');
+    const inboxTitle = document.getElementById('inboxTitle');
+    const inboxList = document.getElementById('inboxList');
+
+    // Toast control
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Load Session asynchronously from Supabase
+    async function initDashboard() {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!session || !session.user) {
+          alert('Access Denied. Please log in first.');
+          window.location.href = '/';
+          return;
+        }
+
+        state.isLoggedIn = true;
+        state.user = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
+          role: session.user.user_metadata?.role || 'client',
+          avatar: session.user.user_metadata?.avatar_url || null,
+          createdAt: session.user.created_at
+        };
+
+        // Determine user role (Check URL parameter role passed from Google Auth login redirect)
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryRole = urlParams.get('role');
+        
+        // Fetch User profile to get role and name
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          if (profile.is_banned) {
+            const untilDate = profile.banned_until ? new Date(profile.banned_until) : null;
+            if (!untilDate || untilDate > new Date()) {
+              const dateStr = untilDate ? untilDate.toLocaleDateString() : 'indefinitely';
+              await supabase.auth.signOut();
+              sessionStorage.removeItem('rl_session');
+              alert(`Your account has been suspended until ${dateStr}. Reason: ${profile.ban_reason || 'Policy violation'}. Redirecting to contact page.`);
+              window.location.href = 'contact';
+              return;
+            } else {
+              await supabase.from('profiles').update({ is_banned: false, banned_until: null, ban_reason: null }).eq('id', profile.id);
+            }
+          }
+          state.role = profile.role;
+          state.user.name = profile.name;
+        } else {
+          // If profile is missing (e.g. newly signed up Google user callback)
+          const finalRole = queryRole || 'client';
+          state.role = finalRole;
+          state.user.role = finalRole;
+
+          await supabase
+            .from('profiles')
+            .insert({
+              id: session.user.id,
+              name: state.user.name,
+              email: session.user.email,
+              role: finalRole
+            });
+
+          if (finalRole === 'creator') {
+            await supabase
+              .from('creators')
+              .insert({
+                id: session.user.id,
+                name: state.user.name,
+                role: 'Video Editor · Freelance',
+                cat: 'Video Editor',
+                loc: 'remote',
+                city: 'Remote',
+                rate: '$35',
+                per: '/hr',
+                rating: 0.0,
+                reviews: 0,
+                experience: 0,
+                grad: ["#34E0CC", "#5fe9d9"],
+                verified: false,
+                bio: 'Welcome to my creator portfolio! Click "Edit Profile" in your dashboard to customize your bio, skills, location, and rates.',
+                skills: ['Video Editor'],
+                completed_jobs: 0,
+                response_time: '< 1 hr',
+                available: true
+              });
+          }
+        }
+
+        // If user is a creator, fetch creator details
+        if (state.role === 'creator') {
+          const { data: creator } = await supabase
+            .from('creators')
+            .select('*')
+            .eq('id', state.user.id)
+            .single();
+
+          if (creator) {
+            state.creatorProfile = creator;
+          } else {
+            // Re-create creator listing if somehow missing
+            state.creatorProfile = {
+              id: state.user.id,
+              name: state.user.name,
+              role: 'Video Editor · Freelance',
+              cat: 'Video Editor',
+              loc: 'remote',
+              city: 'Remote',
+              rate: '$35',
+              per: '/hr',
+              rating: 0.0,
+              reviews: 0,
+              experience: 0,
+              grad: ["#34E0CC", "#5fe9d9"],
+              verified: false,
+              bio: 'Welcome to my creator portfolio! Click "Edit Profile" in your dashboard to customize your bio, skills, location, and rates.',
+              skills: ['Video Editor'],
+              completed_jobs: 0,
+              response_time: '< 1 hr',
+              available: true
+            };
+            await supabase.from('creators').insert(state.creatorProfile);
+          }
+        }
+
+        // Sync state back to sessionStorage
+        sessionStorage.setItem('rl_session', JSON.stringify({
+          isLoggedIn: true,
+          user: state.user,
+          role: state.role,
+          mode: 'login'
+        }));
+
+        // Render Dashboard UI
+        initUI();
+
+      } catch (e) {
+        console.error("Dashboard auth state sync failed:", e);
+        alert("Session error. Redirecting to landing page.");
+        window.location.href = '/';
+      }
+    }
+
+    // --- Initialize Views ---
+    function initUI() {
+      // Nav bar
+      const displayName = state.user.name || state.user.email.split('@')[0] || 'User';
+      const first = displayName.split(' ')[0];
+      navUname.textContent = first;
+      navUava.textContent = (displayName[0] || 'U').toUpperCase();
+      navUroleBadge.className = 'urole-badge';
+      if (state.role === 'admin') {
+        navUroleBadge.textContent = 'Admin';
+        navUroleBadge.classList.add('badge-admin');
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = 'inline-block';
+      } else if (state.role === 'creator') {
+        navUroleBadge.textContent = 'Creator';
+        navUroleBadge.classList.add('badge-creator');
+      } else {
+        navUroleBadge.textContent = 'Client';
+        navUroleBadge.classList.add('badge-client');
+      }
+      
+      // Side card
+      sideName.textContent = displayName;
+      sideEmail.textContent = state.user.email;
+      sideAvatar.textContent = (displayName[0] || 'U').toUpperCase();
+      if (state.role === 'creator' && state.creatorProfile) {
+        sideAvatar.style.background = `linear-gradient(135deg, ${state.creatorProfile.grad[0]}, ${state.creatorProfile.grad[1]})`;
+      } else if (state.role === 'admin') {
+        sideAvatar.style.background = 'rgba(168, 85, 247, 0.12)';
+        sideAvatar.style.color = '#a855f7';
+      } else {
+        sideAvatar.style.background = 'rgba(255, 123, 61, 0.12)';
+        sideAvatar.style.color = 'var(--orange)';
+      }
+
+      renderOverviewPanel();
+      renderInboxPanel();
+      updateInboxBadgeCount();
+    }
+
+    // --- Panel Renderers ---
+    async function renderOverviewPanel() {
+      statsRow.innerHTML = '';
+      formGridFields.innerHTML = '';
+      
+      let count = 0;
+      if (state.role === 'creator') {
+        const { count: recCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('recipient_id', state.user.id);
+        count = recCount || 0;
+      } else {
+        const { count: sentCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_id', state.user.id);
+        count = sentCount || 0;
+      }
+
+      if (state.role !== 'creator') {
+        overviewTitle.textContent = state.role === 'admin' ? 'Admin Account Workspace' : 'Client Account Workspace';
+        visibilityToggleWrap.style.display = 'none';
+
+        // 1. Stats Row for Clients / Admins
+        statsRow.innerHTML = `
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Messages Sent</span>
+            <div class="dash-stat-val">${count}</div>
+          </div>
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Account Status</span>
+            <div class="dash-stat-val" style="color:${state.role === 'admin' ? '#a855f7' : 'var(--orange)'}">${state.role === 'admin' ? 'Admin Mode' : 'Client Mode'}</div>
+          </div>
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Platform Fees Paid</span>
+            <div class="dash-stat-val">₹0.00</div>
+          </div>
+        `;
+
+        // 2. Client / Admin Fields
+        formGridFields.innerHTML = `
+          <div class="full">
+            <label for="clientName">Full Name</label>
+            <input type="text" id="clientName" value="${state.user.name}" required>
+          </div>
+          <div class="full">
+            <label for="clientEmail">Email address</label>
+            <input type="email" id="clientEmail" value="${state.user.email}" readonly style="opacity: 0.6; cursor: not-allowed;">
+            <p style="font-size:11px;color:var(--muted-2);margin-top:4px">Email addresses cannot be changed for security.</p>
+          </div>
+        `;
+
+      } else {
+        // Creator Panel
+        overviewTitle.textContent = 'Creator Portfolio Workspace';
+        visibilityToggleWrap.style.display = 'flex';
+        
+        // Setup visibility toggle state
+        visibilityToggle.checked = state.creatorProfile.available !== false;
+
+        // 1. Stats Row for Creators
+        statsRow.innerHTML = `
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Received Inquiries</span>
+            <div class="dash-stat-val">${count}</div>
+          </div>
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Profile Rating</span>
+            <div class="dash-stat-val" style="color:var(--teal)">★ ${state.creatorProfile.rating}</div>
+          </div>
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Jobs Completed</span>
+            <div class="dash-stat-val">${state.creatorProfile.completed_jobs || 0}</div>
+          </div>
+        `;
+
+        // 2. Creator Fields
+        const rateStr = state.creatorProfile.rate || '$35';
+        const currencySymbol = rateStr.startsWith('₹') ? '₹' : '$';
+        const rateVal = rateStr.replace(/[₹$,]/g, '').trim() || '35';
+
+        formGridFields.innerHTML = `
+          <div>
+            <label for="creatorName">Display Name</label>
+            <input type="text" id="creatorName" value="${state.creatorProfile.name}" required>
+          </div>
+          <div>
+            <label for="creatorRole">Display Subtitle / Specialization</label>
+            <input type="text" id="creatorRole" value="${state.creatorProfile.role}" placeholder="e.g. YouTube Video Editor · Pro" required>
+          </div>
+          <div>
+            <label for="creatorCat">Category Lane</label>
+            <select id="creatorCat">
+              <option value="Video Editor" ${state.creatorProfile.cat === 'Video Editor' ? 'selected' : ''}>Video Editing</option>
+              <option value="Animation" ${state.creatorProfile.cat === 'Animation' ? 'selected' : ''}>2D / 3D Animation</option>
+              <option value="Motion Graphics" ${state.creatorProfile.cat === 'Motion Graphics' ? 'selected' : ''}>Motion Graphics</option>
+              <option value="VFX" ${state.creatorProfile.cat === 'VFX' ? 'selected' : ''}>VFX & Compositing</option>
+              <option value="Colorist" ${state.creatorProfile.cat === 'Colorist' ? 'selected' : ''}>Color Grading</option>
+              <option value="Thumbnail" ${state.creatorProfile.cat === 'Thumbnail' ? 'selected' : ''}>Thumbnail Design</option>
+              <option value="Sound" ${state.creatorProfile.cat === 'Sound' ? 'selected' : ''}>Sound & Mixing</option>
+            </select>
+          </div>
+          <div>
+            <label>Base Rate</label>
+            <div style="display:flex; gap:8px">
+              <select id="creatorCurrency" style="width:80px;background:var(--ink-2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:0 8px">
+                <option value="$" ${currencySymbol === '$' ? 'selected' : ''}>$ (USD)</option>
+                <option value="₹" ${currencySymbol === '₹' ? 'selected' : ''}>₹ (INR)</option>
+              </select>
+              <input type="number" id="creatorRateValue" value="${rateVal}" placeholder="e.g. 35" style="flex:1" required>
+            </div>
+          </div>
+          <div>
+            <label for="creatorPer">Rate Unit</label>
+            <select id="creatorPer">
+              <option value="/hr" ${state.creatorProfile.per === '/hr' ? 'selected' : ''}>per hour (/hr)</option>
+              <option value="/reel" ${state.creatorProfile.per === '/reel' ? 'selected' : ''}>per Short/Reel (/reel)</option>
+              <option value="/thumb" ${state.creatorProfile.per === '/thumb' ? 'selected' : ''}>per Thumbnail (/thumb)</option>
+              <option value="/project" ${state.creatorProfile.per === '/project' ? 'selected' : ''}>per Project (/project)</option>
+            </select>
+          </div>
+          <div>
+            <label for="creatorCity">City / Location Details</label>
+            <input type="text" id="creatorCity" value="${state.creatorProfile.city}" placeholder="e.g. Mumbai, IN or Remote" required>
+          </div>
+          <div>
+            <label for="creatorExp">Years of Experience</label>
+            <input type="number" id="creatorExp" value="${state.creatorProfile.experience || 0}" min="0" placeholder="e.g. 3" required>
+          </div>
+          <div class="full">
+            <label for="creatorBio">Creator Portfolio Bio</label>
+            <textarea id="creatorBio" rows="4" placeholder="Tell clients about your experience, tools, and background..." required>${state.creatorProfile.bio || ''}</textarea>
+          </div>
+          <div class="full">
+            <label for="creatorSkills">Skills / Core Tags (comma-separated)</label>
+            <input type="text" id="creatorSkills" value="${(state.creatorProfile.skills || []).join(', ')}" placeholder="e.g. Premiere Pro, After Effects, DaVinci Resolve">
+          </div>
+        `;
+      }
+    }
+
+    async function renderInboxPanel() {
+      inboxList.innerHTML = '';
+
+      if (state.role !== 'creator') {
+        inboxTitle.textContent = 'Sent Inquiries';
+        
+        const { data: clientMsgs, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('sender_id', state.user.id);
+        
+        if (error) {
+          inboxList.innerHTML = '<div class="empty">// failed to load messages.</div>';
+          return;
+        }
+
+        if (!clientMsgs || clientMsgs.length === 0) {
+          inboxList.innerHTML = '<div class="empty">// you have not sent any inquiries yet. Browse creators and click "Connect".</div>';
+          return;
+        }
+
+        const { data: creatorsList } = await supabase.from('creators').select('id, name');
+
+        clientMsgs.reverse().forEach(m => {
+          const recipient = creatorsList ? creatorsList.find(c => String(c.id) === String(m.recipient_id)) : null;
+          const name = recipient ? recipient.name : 'Vetted Creator';
+          const date = new Date(m.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          const item = document.createElement('div');
+          item.className = 'inbox-item';
+          item.innerHTML = `
+            <div class="inbox-meta">
+              <span class="inbox-sender">Sent to: <b>${name}</b></span>
+              <span class="inbox-date">${date}</span>
+            </div>
+            <div class="inbox-subj">${m.subject}</div>
+            <div class="inbox-body">${m.body}</div>
+          `;
+          inboxList.appendChild(item);
+        });
+
+      } else {
+        // Creator
+        inboxTitle.textContent = 'Received Inquiries';
+        
+        const { data: creatorMsgs, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('recipient_id', state.user.id);
+        
+        if (error) {
+          inboxList.innerHTML = '<div class="empty">// failed to load messages.</div>';
+          return;
+        }
+
+        if (!creatorMsgs || creatorMsgs.length === 0) {
+          inboxList.innerHTML = '<div class="empty">// no messages in your inbox. Make sure you are "Active" so clients can find you.</div>';
+          return;
+        }
+
+        creatorMsgs.reverse().forEach(m => {
+          const date = new Date(m.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+          const item = document.createElement('div');
+          item.className = 'inbox-item';
+          item.innerHTML = `
+            <div class="inbox-meta">
+              <span class="inbox-sender">From: <b>${m.sender_name}</b> (<a href="mailto:${m.sender_email}" style="color:var(--teal);text-decoration:underline">${m.sender_email}</a>)</span>
+              <span class="inbox-date">${date}</span>
+            </div>
+            <div class="inbox-subj">${m.subject}</div>
+            <div class="inbox-body">${m.body}</div>
+          `;
+          inboxList.appendChild(item);
+        });
+      }
+    }
+
+    async function updateInboxBadgeCount() {
+      let count = 0;
+      if (state.role !== 'creator') {
+        const { count: sentCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_id', state.user.id);
+        count = sentCount || 0;
+      } else {
+        const { count: recCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('recipient_id', state.user.id);
+        count = recCount || 0;
+      }
+
+      if (count > 0) {
+        inboxCountBadge.textContent = count;
+        inboxCountBadge.style.display = 'inline-block';
+      } else {
+        inboxCountBadge.style.display = 'none';
+      }
+    }
+
+    // --- Tab Switching ---
+    menuBtnOverview.addEventListener('click', () => {
+      menuBtnOverview.classList.add('active');
+      menuBtnInbox.classList.remove('active');
+      panelOverview.style.display = 'block';
+      panelInbox.style.display = 'none';
+    });
+
+    menuBtnInbox.addEventListener('click', () => {
+      menuBtnInbox.classList.add('active');
+      menuBtnOverview.classList.remove('active');
+      panelOverview.style.display = 'none';
+      panelInbox.style.display = 'block';
+      renderInboxPanel();
+    });
+
+    // --- Form Save Handler ---
+    saveProfileBtn.addEventListener('click', async () => {
+      UI.setButtonLoading(saveProfileBtn, true, 'Saving...');
+
+      if (state.role !== 'creator') {
+        const nameInput = document.getElementById('clientName').value.trim();
+        if (nameInput.length < 2) {
+          showToast('Please enter a valid full name.');
+          UI.setButtonLoading(saveProfileBtn, false, 'Save Changes');
+          return;
+        }
+
+        // Update Profiles DB
+        const { error } = await supabase
+          .from('profiles')
+          .update({ name: nameInput })
+          .eq('id', state.user.id);
+
+        UI.setButtonLoading(saveProfileBtn, false, 'Save Changes');
+
+        if (error) {
+          showToast('Failed to save details: ' + error.message);
+        } else {
+          state.user.name = nameInput;
+          const session = JSON.parse(sessionStorage.getItem('rl_session'));
+          session.user.name = nameInput;
+          sessionStorage.setItem('rl_session', JSON.stringify(session));
+          initUI();
+          showToast('Client profile updated successfully!');
+        }
+      } else {
+        // Update Creator Profile
+        const nameInput = document.getElementById('creatorName').value.trim();
+        const roleInput = document.getElementById('creatorRole').value.trim();
+        const catInput = document.getElementById('creatorCat').value;
+        const currInput = document.getElementById('creatorCurrency').value;
+        const rateValInput = document.getElementById('creatorRateValue').value.trim();
+        const rateInput = currInput + rateValInput;
+        const perInput = document.getElementById('creatorPer').value;
+        const cityInput = document.getElementById('creatorCity').value.trim();
+        const expInput = parseInt(document.getElementById('creatorExp').value) || 0;
+        const bioInput = document.getElementById('creatorBio').value.trim();
+        const skillsInput = document.getElementById('creatorSkills').value.trim();
+
+        if (!nameInput || !roleInput || !rateValInput || !cityInput || !bioInput) {
+          showToast('Please fill in all required fields.');
+          UI.setButtonLoading(saveProfileBtn, false, 'Save Changes');
+          return;
+        }
+
+        const parsedSkills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
+
+        // 1. Update creators DB
+        const { error: cError } = await supabase
+          .from('creators')
+          .update({
+            name: nameInput,
+            role: roleInput,
+            cat: catInput,
+            rate: rateInput,
+            per: perInput,
+            city: cityInput,
+            experience: expInput,
+            bio: bioInput,
+            skills: parsedSkills
+          })
+          .eq('id', state.user.id);
+
+        // 2. Update profiles DB
+        const { error: pError } = await supabase
+          .from('profiles')
+          .update({ name: nameInput })
+          .eq('id', state.user.id);
+
+        UI.setButtonLoading(saveProfileBtn, false, 'Save Changes');
+
+        if (cError || pError) {
+          showToast('Failed to save details: ' + (cError?.message || pError?.message));
+        } else {
+          state.user.name = nameInput;
+          state.creatorProfile.name = nameInput;
+          state.creatorProfile.role = roleInput;
+          state.creatorProfile.cat = catInput;
+          state.creatorProfile.rate = rateInput;
+          state.creatorProfile.per = perInput;
+          state.creatorProfile.city = cityInput;
+          state.creatorProfile.experience = expInput;
+          state.creatorProfile.bio = bioInput;
+          state.creatorProfile.skills = parsedSkills;
+
+          const session = JSON.parse(sessionStorage.getItem('rl_session'));
+          session.user.name = nameInput;
+          sessionStorage.setItem('rl_session', JSON.stringify(session));
+
+          initUI();
+          showToast('Creator profile updated successfully!');
+        }
+      }
+    });
+
+    // --- Visibility Toggle ---
+    visibilityToggle.addEventListener('change', async () => {
+      if (state.role === 'creator' && state.creatorProfile) {
+        const isChecked = visibilityToggle.checked;
+        
+        const { error } = await supabase
+          .from('creators')
+          .update({ available: isChecked })
+          .eq('id', state.user.id);
+
+        if (error) {
+          showToast('Failed to update visibility: ' + error.message);
+          visibilityToggle.checked = !isChecked; // Revert
+        } else {
+          state.creatorProfile.available = isChecked;
+          showToast(isChecked 
+            ? 'Your portfolio is now public on the marketplace.' 
+            : 'Your portfolio is now hidden from search.'
+          );
+        }
+      }
+    });
+
+    // --- Logout ---
+    document.getElementById('dashLogoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      sessionStorage.removeItem('rl_session');
+      alert('You have logged out.');
+      window.location.href = '/';
+    });
+
+    // Run initialization
+    initDashboard();
+  });
+</script>
+</body>
+</html>

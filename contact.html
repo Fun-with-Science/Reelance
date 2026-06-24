@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reelance — Contact Us</title>
+  <meta name="description" content="Get direct support from the Reelance team. Submit inquiries, report policy violations, or request help with your account." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .support-form {
+      margin-top: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted-2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 10px rgba(52, 224, 204, 0.1);
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (max-width: 768px) {
+      main {
+        margin-top: 80px !important;
+        margin-bottom: 48px !important;
+        padding: 0 16px;
+      }
+      main h1 {
+        font-size: 28px !important;
+      }
+      .dash-card {
+        padding: 24px !important;
+        border-radius: 14px !important;
+      }
+      .nav-inner .nav-cta .btn-back {
+        display: inline-flex !important;
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 99px;
+      }
+    }
+    @media (max-width: 520px) {
+      main {
+        margin-top: 72px !important;
+        margin-bottom: 36px !important;
+        padding: 0 14px;
+      }
+      main h1 {
+        font-size: 24px !important;
+      }
+      .dash-card {
+        padding: 18px !important;
+        border-radius: 12px !important;
+      }
+      .eyebrow {
+        font-size: 10.5px;
+      }
+      .form-group input, .form-group textarea {
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-mark"></span>Reel<b>ance</b>
+    </a>
+    <nav class="links" aria-label="Main navigation">
+      <a href="/#categories">Browse</a>
+      <a href="/#how">How it works</a>
+      <a href="/#creators">Creators</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="/" class="btn btn-ghost btn-back">← Back</a>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="wrap" style="margin-top: 130px; margin-bottom: 96px; max-width: 680px;">
+  <div class="dash-card" style="padding: 48px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);">
+    <span class="eyebrow">// get in touch</span>
+    <h1 style="font-size: 36px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin: 12px 0 16px; color: var(--text);">Contact Support</h1>
+    <p style="color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 32px;">
+      Have any questions, feedback, or need to report a user policy violation or fake account? Send a message directly to our platform administrators using the form below. We will review your request and get back to you shortly.
+    </p>
+    
+    <form class="support-form" id="supportForm" onsubmit="return false;">
+      <div class="form-group">
+        <label for="supportName">Your Name</label>
+        <input type="text" id="supportName" placeholder="e.g. Prem Agarwal" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="supportEmail">Email Address</label>
+        <input type="email" id="supportEmail" placeholder="e.g. name@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="supportSubject">Subject / Topic</label>
+        <input type="text" id="supportSubject" placeholder="e.g. Reporting user violation, Login problems, Banned account appeal" required>
+      </div>
+
+      <div class="form-group">
+        <label for="supportMessage">Message Description</label>
+        <textarea id="supportMessage" rows="6" placeholder="Please provide details, user IDs, or description of the issue..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="supportSubmitBtn" style="width:100%; justify-content:center; margin-top:12px">Submit Message</button>
+    </form>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap" style="text-align:center;color:var(--muted-2);font-family:'Space Mono', monospace;font-size:12px;padding:30px 0;border-top:1px solid var(--line)">
+    © 2026 Reelance · Contact Center
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase Client
+  const SUPABASE_URL = 'https://xfgpsojwqvrhznljoxgn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_XfkI8bJIU3eMaCfIxcnSPQ_QePN0lUQ';
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const supportName = document.getElementById('supportName');
+    const supportEmail = document.getElementById('supportEmail');
+    const supportSubject = document.getElementById('supportSubject');
+    const supportMessage = document.getElementById('supportMessage');
+    const supportForm = document.getElementById('supportForm');
+    const submitBtn = document.getElementById('supportSubmitBtn');
+
+    // Toast Control
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Loader Helper
+    function setButtonLoading(loading) {
+      if (loading) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `Sending...`;
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `Submit Message`;
+      }
+    }
+
+    // Prefill name and email if user is already logged in
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user) {
+        supportEmail.value = session.user.email;
+        // Fetch profiles table name
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile) {
+          supportName.value = profile.name;
+        } else {
+          supportName.value = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+        }
+      }
+    } catch (e) {
+      console.warn("Could not prefill user details:", e);
+    }
+
+    // Submit Action
+    supportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setButtonLoading(true);
+
+      const name = supportName.value.trim();
+      const email = supportEmail.value.trim();
+      const subject = supportSubject.value.trim();
+      const message = supportMessage.value.trim();
+
+      if (!name || !email || !subject || !message) {
+        showToast("Please fill in all required fields.");
+        setButtonLoading(false);
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('support_tickets')
+          .insert({
+            name,
+            email,
+            subject,
+            message,
+            status: 'open'
+          });
+
+        if (error) {
+          showToast("Failed to submit message: " + error.message);
+        } else {
+          showToast("Message submitted successfully!");
+          supportSubject.value = '';
+          supportMessage.value = '';
+        }
+      } catch (err) {
+        showToast("Unexpected error occurred: " + err.message);
+      } finally {
+        setButtonLoading(false);
+      }
+    });
+  });
+</script>
+</body>
+</html>
