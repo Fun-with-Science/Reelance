@@ -1,3 +1,4 @@
+// Reelance configuration - Automated Git deployment active
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
