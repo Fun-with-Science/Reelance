@@ -172,19 +172,12 @@ header.nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--grade);
-  display: grid;
-  place-items: center;
-  position: relative;
+  background: url('/logo.png') no-repeat center;
+  background-size: cover;
   flex-shrink: 0;
 }
 .logo-mark::before {
-  content: "";
-  width: 0; height: 0;
-  border-left: 9px solid #170d06;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  margin-left: 3px;
+  display: none;
 }
 .logo b { color: var(--teal); }
 
