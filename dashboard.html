@@ -388,6 +388,28 @@
         font-size: 11.5px;
       }
     }
+
+    .back-text-mobile, .admin-text-mobile {
+      display: none;
+    }
+    @media (max-width: 640px) {
+      .logo-text {
+        display: none !important;
+      }
+      .back-text-full, .admin-text-full {
+        display: none !important;
+      }
+      .back-text-mobile, .admin-text-mobile {
+        display: inline !important;
+      }
+      header.nav nav.links {
+        margin-left: 8px !important;
+      }
+      .nav-user .logout {
+        font-size: 12.5px !important;
+        padding: 4px 6px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -396,11 +418,17 @@
 <header class="nav">
   <div class="wrap nav-inner">
     <a href="/" class="logo">
-      <span class="logo-mark"></span>Reel<b>ance</b>
+      <span class="logo-mark"></span><span class="logo-text">Reel<b>ance</b></span>
     </a>
     <nav class="links" aria-label="Dashboard navigation">
-      <a href="/">← Back to Marketplace</a>
-      <a href="admin" id="adminLink" style="display:none;margin-left:16px;color:#a855f7;font-weight:600">⚙ Admin Panel</a>
+      <a href="/">
+        <span class="back-text-full">← Back to Marketplace</span>
+        <span class="back-text-mobile">← Back</span>
+      </a>
+      <a href="admin" id="adminLink" style="display:none;margin-left:16px;color:#a855f7;font-weight:600">
+        <span class="admin-text-full">⚙ Admin Panel</span>
+        <span class="admin-text-mobile">⚙ Admin</span>
+      </a>
     </nav>
     <div class="nav-user" style="display:flex">
       <div class="uchip">
