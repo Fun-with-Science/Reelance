@@ -103,6 +103,31 @@ document.addEventListener('DOMContentLoaded', () => {
     return cachedCreators;
   }
 
+  async function checkConnectionRateLimit(clientId) {
+    if (!supabase) return true;
+    const session = Auth.getState();
+    if (session.user && session.user.role === 'admin') {
+      return true;
+    }
+    try {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { count, error } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('sender_id', clientId)
+        .gte('created_at', oneHourAgo);
+
+      if (error) {
+        console.error("Error checking rate limit:", error);
+        return true;
+      }
+      return count < 5;
+    } catch (e) {
+      console.error("Rate limit check failed:", e);
+      return true;
+    }
+  }
+
   /* ==========================================================================
      DYNAMIC RENDERING
      ========================================================================== */
@@ -355,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return parseFloat(clean) || 0;
   }
 
-  function handleConnectClick(creatorId) {
+  async function handleConnectClick(creatorId) {
     const isLoggedIn = Auth.getState().isLoggedIn;
     if (!isLoggedIn) {
       UI.showToast('Please log in to send message inquiries.');
@@ -367,6 +392,14 @@ document.addEventListener('DOMContentLoaded', () => {
       UI.showToast('You cannot send message inquiries to yourself.');
       return;
     }
+
+    // Check hourly connection rate limit (max 5)
+    const allowed = await checkConnectionRateLimit(currentUser.id);
+    if (!allowed) {
+      UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
+      return;
+    }
+
     const creators = getCreatorsFromDB();
     const creator = creators.find(c => String(c.id) === String(creatorId));
     if (!creator) return;
@@ -414,6 +447,14 @@ document.addEventListener('DOMContentLoaded', () => {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>
           Message ${creator.name.split(' ')[0]}
          </button>`;
+
+    const showWaButton = !isSelf && creator.whatsapp && creator.whatsapp.trim().length > 0;
+    const waButtonHTML = showWaButton
+      ? `<button class="btn" id="profileWhatsappBtn" style="flex:1;justify-content:center;background:#25D366;color:white;border:none;display:inline-flex;align-items:center;gap:8px;font-weight:600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.45L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436.002 9.858-4.417 9.86-9.86.002-2.63-1.023-5.102-2.884-6.964-1.86-1.862-4.33-2.884-6.967-2.885-5.438 0-9.86 4.417-9.862 9.861-.001 1.67.452 3.3 1.309 4.745L1.047 22.9l4.8-1.258l.8-.488zM18.25 14.86c-.34-.17-2.01-.99-2.32-1.1-.31-.11-.53-.17-.75-.38-.22-.2-.55-.66-.99-1.1-.43-.44-.8-.92-1.15-1.1-.34-.17-.67-.14-.92.14-.25.28-.97 1.1-1.2 1.32-.22.22-.44.25-.78.08-.34-.17-1.42-.52-2.7-1.66C7.07 9.94 6.28 8.64 6 8.2c-.22-.44-.02-.67.14-.85.16-.16.34-.34.52-.52.18-.18.25-.3.38-.5.13-.2.06-.38-.03-.55-.09-.17-.75-1.8-.99-2.38-.25-.63-.52-.52-.72-.52h-.62c-.22 0-.58.08-.88.4-.3.32-1.15 1.12-1.15 2.72s1.16 3.16 1.32 3.38c.16.22 2.29 3.5 5.55 4.9 3.26 1.4 3.26.93 3.84.88.58-.05 2.01-.82 2.3-1.57.29-.75.29-1.38.2-1.52-.09-.13-.34-.2-.68-.37z"/></svg>
+          WhatsApp
+         </button>`
+      : '';
 
     const ratingSectionHTML = isSelf
       ? ''
@@ -479,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
         ${msgButtonHTML}
+        ${waButtonHTML}
         <button class="btn btn-ghost" id="profileShareBtn" style="padding:13px 18px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
         </button>
@@ -495,6 +537,45 @@ document.addEventListener('DOMContentLoaded', () => {
         handleConnectClick(creatorId);
       }, 300);
     });
+
+    if (showWaButton) {
+      const waBtn = document.getElementById('profileWhatsappBtn');
+      waBtn.addEventListener('click', async () => {
+        if (isSelf) return;
+
+        UI.setButtonLoading(waBtn, true, 'Connecting...');
+        const user = Auth.getState().user;
+
+        // 1. Check Rate Limit
+        const allowed = await checkConnectionRateLimit(user.id);
+        if (!allowed) {
+          UI.setButtonLoading(waBtn, false, 'WhatsApp');
+          UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
+          return;
+        }
+
+        // 2. Insert WhatsApp System message to DB
+        if (supabase) {
+          await supabase
+            .from('messages')
+            .insert({
+              sender_id: user.id,
+              sender_name: user.name,
+              sender_email: user.email,
+              recipient_id: String(creatorId),
+              subject: 'WhatsApp Connection',
+              body: '[System Notification] This client clicked your WhatsApp button to connect.'
+            });
+        }
+
+        UI.setButtonLoading(waBtn, false, 'WhatsApp');
+
+        // 3. Redirect to WhatsApp
+        const cleanPhone = creator.whatsapp.replace(/[^0-9]/g, '');
+        const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent('Hi, I found your profile on Reelance and would like to connect!')}`;
+        window.open(waUrl, '_blank');
+      });
+    }
 
     document.getElementById('profileShareBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(window.location.href);
@@ -1079,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupMessagingEvents() {
     const sendBtn = document.getElementById('msgSendBtn');
     if (sendBtn) {
-      sendBtn.addEventListener('click', () => {
+      sendBtn.addEventListener('click', async () => {
         const subject = document.getElementById('msgSubject').value.trim();
         const body = document.getElementById('msgBody').value.trim();
 
@@ -1097,6 +1178,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const user = Auth.getState().user;
+
+        // Rate limit check
+        const allowed = await checkConnectionRateLimit(user.id);
+        if (!allowed) {
+          UI.setButtonLoading(sendBtn, false, 'Send message');
+          UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
+          return;
+        }
+
         supabase
           .from('messages')
           .insert({
