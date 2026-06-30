@@ -1897,3 +1897,165 @@ footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 54px 0 40
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--panel-2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
+
+/* =============================================
+   LIGHT MODE DESIGN SYSTEM & TOGGLE
+   ============================================= */
+
+/* Theme Toggle Button */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--ink-2);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  flex-shrink: 0;
+  outline: none;
+}
+.theme-toggle:hover {
+  border-color: var(--line-2);
+  background: var(--panel);
+}
+.theme-toggle:focus-visible {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(52,224,204,0.25);
+}
+
+/* Sun/Moon visibility */
+body.light-theme .theme-toggle .sun-icon {
+  display: none;
+}
+body.light-theme .theme-toggle .moon-icon {
+  display: block;
+  color: #475569; /* slate-600 */
+}
+body:not(.light-theme) .theme-toggle .sun-icon {
+  display: block;
+  color: #ffb938; /* warm yellow */
+}
+body:not(.light-theme) .theme-toggle .moon-icon {
+  display: none;
+}
+
+/* Light Theme Variables */
+body.light-theme {
+  --ink: #F8FAFC; /* slate-50 background */
+  --ink-2: #FFFFFF; /* white */
+  --panel: rgba(255, 255, 255, 0.7); /* glassy card background */
+  --panel-2: #F1F5F9; /* slate-100 */
+  --line: rgba(15, 23, 42, 0.08); /* subtle dark border */
+  --line-2: rgba(15, 23, 42, 0.16); /* hover border */
+  --text: #0F172A; /* slate-900 */
+  --muted: #475569; /* slate-600 */
+  --muted-2: #64748B; /* slate-500 */
+  --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 16px -6px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+}
+
+/* Light Theme Background Gradient Glow */
+body.light-theme::before {
+  background:
+    radial-gradient(1000px 600px at 10% -10%, rgba(255,123,61,0.06), transparent 70%),
+    radial-gradient(900px 600px at 90% 0%, rgba(52,224,204,0.05), transparent 70%);
+}
+
+/* Glassmorphism overrides for cards and header in light mode */
+body.light-theme .ccard {
+  background: var(--panel);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: var(--shadow);
+}
+body.light-theme .ccard:hover {
+  border-color: var(--teal);
+  box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.12);
+}
+body.light-theme header.nav {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+body.light-theme header.nav.scrolled {
+  box-shadow: 0 10px 20px -10px rgba(15, 23, 42, 0.05);
+}
+
+/* Modal and dialog glassmorphic background for light mode */
+body.light-theme .modal {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Trusted logos and stats colors in light mode */
+body.light-theme .tlogo {
+  opacity: 0.75;
+  filter: invert(0.8);
+}
+body.light-theme .stat-div {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+/* Select option background for light mode */
+body.light-theme .field select option {
+  background: #FFFFFF;
+  color: #0F172A;
+}
+
+/* Lockwall styling in light mode */
+body.light-theme .creators-wrap.locked::after {
+  background: linear-gradient(to bottom, transparent, #F8FAFC);
+}
+body.light-theme .creators-wrap.locked .lock-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Active navigation link in light mode */
+body.light-theme nav.links a.active {
+  color: var(--text);
+}
+body.light-theme nav.links a.active::after {
+  background: var(--text);
+}
+body.light-theme nav.links a:hover {
+  color: var(--text);
+}
+
+/* Category Lane background/border overrides in light mode */
+body.light-theme .cat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+body.light-theme .cat:hover {
+  background: var(--ink-2);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Message boxes and ticket boxes in dashboard */
+body.light-theme .mcard, body.light-theme .ticket-item {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+/* Sidebar navigation active state */
+body.light-theme .sb-link.active {
+  background: var(--panel-2);
+}
+
+/* Admin Dashboard tables and metrics */
+body.light-theme .ametric, body.light-theme .atab {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}

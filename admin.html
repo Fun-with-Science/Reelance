@@ -579,6 +579,11 @@
   </style>
 </head>
 <body>
+<script>
+  if (localStorage.getItem('rl_theme') === 'light') {
+    document.body.classList.add('light-theme');
+  }
+</script>
 
 <!-- TOP PROMO BANNER -->
 <div class="top-promo-banner">
@@ -610,7 +615,16 @@
       <button class="btn btn-primary" id="loginSubmitBtn" style="width:100%;justify-content:center">
         Log In to Panel
       </button>
-      <div style="text-align:center;margin-top:16px">
+      <div style="text-align:center;margin-top:16px;display:flex;justify-content:center;align-items:center;gap:12px">
+        <button class="theme-toggle" id="loginThemeToggle" aria-label="Toggle Theme">
+          <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
         <a href="/" style="font-size:13px;color:var(--teal);text-decoration:underline">← Return to Website</a>
       </div>
     </div>
@@ -624,7 +638,16 @@
         <span class="logo-mark"></span>
         Reelance <span class="admin-badge">ADMIN CONTROL</span>
       </div>
-      <div class="admin-nav-right">
+      <div class="admin-nav-right" style="display:flex; align-items:center; gap:12px">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+          <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
         <span class="admin-user-tag" id="adminUserTag">admin@reelance.com</span>
         <button class="btn-logout" id="dashLogoutBtn">Log Out</button>
       </div>
@@ -1497,6 +1520,23 @@
     // Search and Filter triggers
     userSearch.addEventListener('input', renderUsers);
     roleSelect.addEventListener('change', renderUsers);
+
+    // Theme toggles
+    const loginThemeToggle = document.getElementById('loginThemeToggle');
+    if (loginThemeToggle) {
+      loginThemeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('rl_theme', isLight ? 'light' : 'dark');
+      });
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('rl_theme', isLight ? 'light' : 'dark');
+      });
+    }
 
     // Run Initial session checks
     initAdmin();
