@@ -3,6 +3,7 @@
    Main application controller
    ============================================= */
 
+// Redeploy trigger: bypass transient Hostinger FTP rate limits
 function initApp() {
   const supabase = window.supabaseClient;
   let cachedCreators = [];
