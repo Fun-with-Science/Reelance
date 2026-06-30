@@ -49,6 +49,12 @@ const REELANCE_DATA = {
       count: "260"
     },
     {
+      icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+      name: "Digital Marketing",
+      filter: "Marketing",
+      count: "1,450"
+    },
+    {
       icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg>`,
       name: "See everything",
       filter: "All",
