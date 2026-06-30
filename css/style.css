@@ -1947,13 +1947,16 @@ body:not(.light-theme) .theme-toggle .moon-icon {
 body.light-theme {
   --ink: #F8FAFC; /* slate-50 background */
   --ink-2: #FFFFFF; /* white */
-  --panel: rgba(255, 255, 255, 0.7); /* glassy card background */
+  --panel: rgba(255, 255, 255, 0.45); /* transparent glassy background */
   --panel-2: #F1F5F9; /* slate-100 */
   --line: rgba(15, 23, 42, 0.08); /* subtle dark border */
   --line-2: rgba(15, 23, 42, 0.16); /* hover border */
   --text: #0F172A; /* slate-900 */
   --muted: #475569; /* slate-600 */
   --muted-2: #64748B; /* slate-500 */
+  --orange: #EA580C; /* rich dark orange (orange-600) for legibility */
+  --teal: #0D9488; /* rich dark teal (teal-600) for legibility */
+  --green: #16A34A; /* rich dark green (green-600) */
   --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 16px -6px rgba(15, 23, 42, 0.05);
   --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
 }
@@ -1961,20 +1964,48 @@ body.light-theme {
 /* Light Theme Background Gradient Glow */
 body.light-theme::before {
   background:
-    radial-gradient(1000px 600px at 10% -10%, rgba(255,123,61,0.06), transparent 70%),
-    radial-gradient(900px 600px at 90% 0%, rgba(52,224,204,0.05), transparent 70%);
+    radial-gradient(1200px 600px at 10% -10%, rgba(234, 88, 12, 0.07), transparent 70%),
+    radial-gradient(1000px 600px at 90% 0%, rgba(13, 148, 136, 0.06), transparent 70%);
+}
+
+/* Top Promo Banner Legibility */
+body.light-theme .top-promo-banner {
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(234, 88, 12, 0.07) 0%, rgba(13, 148, 136, 0.07) 100%);
+  border-bottom: 1px solid var(--line);
+}
+body.light-theme .top-promo-banner b {
+  color: var(--orange);
+}
+
+/* Hero Freeline Subtext Contrast */
+body.light-theme .freeline {
+  color: var(--teal);
+  background: rgba(13, 148, 136, 0.08);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+
+/* Primary Button White Text Override */
+body.light-theme .btn-primary {
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 25px -10px rgba(234, 88, 12, 0.4);
+}
+body.light-theme .btn-primary:hover {
+  box-shadow: 0 16px 35px -12px rgba(234, 88, 12, 0.55);
 }
 
 /* Glassmorphism overrides for cards and header in light mode */
 body.light-theme .ccard {
   background: var(--panel);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.03);
 }
 body.light-theme .ccard:hover {
-  border-color: var(--teal);
-  box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(13, 148, 136, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
 }
 body.light-theme header.nav {
   background: rgba(255, 255, 255, 0.75);
