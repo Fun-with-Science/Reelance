@@ -85,20 +85,87 @@ function initApp() {
     }
   }
 
-  async function loadCreators() {
-    // IMMEDIATE RENDER: Show local fallback creators right away so the grid is never blank
-    if (cachedCreators.length === 0) {
-      cachedCreators = window.REELANCE_DATA.creators || [];
+  function injectSkeletonStyles() {
+    if (document.getElementById('skeleton-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'skeleton-styles';
+    style.innerHTML = `
+      @keyframes skeleton-shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .skeleton-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        height: 172px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .skeleton-line {
+        background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.6s infinite linear;
+        border-radius: 6px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function renderSkeleton() {
+    injectSkeletonStyles();
+    const grid = document.getElementById('creatorGrid');
+    if (!grid) return;
+    
+    const count = isBrowsePage ? 8 : 4;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      html += `
+        <div class="skeleton-card">
+          <div style="display:flex;gap:16px;align-items:center">
+            <div class="skeleton-line" style="width:48px;height:48px;border-radius:50%"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+              <div class="skeleton-line" style="width:60%;height:16px"></div>
+              <div class="skeleton-line" style="width:40%;height:12px"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <div class="skeleton-line" style="width:70px;height:24px;border-radius:99px"></div>
+            <div class="skeleton-line" style="width:85px;height:24px;border-radius:99px"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;border-top:1px solid rgba(255,255,255,0.05);padding-top:12px">
+            <div class="skeleton-line" style="width:80px;height:20px"></div>
+            <div class="skeleton-line" style="width:75px;height:28px;border-radius:8px"></div>
+          </div>
+        </div>
+      `;
     }
-    renderCreatorsList();
+    grid.innerHTML = html;
+  }
+
+  async function loadCreators() {
+    // If no creators are loaded yet, render the shimmer skeleton instead of dummy data
+    if (cachedCreators.length === 0) {
+      renderSkeleton();
+    } else {
+      renderCreatorsList();
+    }
+    
     if (Auth.getState().isLoggedIn) {
       UI.unlockCreators();
     }
 
-    // ASYNC ENHANCEMENT: Try to fetch fresh data from DB (with timeout to prevent hangs)
     try {
       const dbClient = window.supabaseAnonClient || window.supabaseClient || supabase;
-      if (!dbClient) return;
+      if (!dbClient) {
+        if (cachedCreators.length === 0) {
+          cachedCreators = window.REELANCE_DATA.creators || [];
+          renderCreatorsList();
+        }
+        return;
+      }
 
       // Race the Supabase query against a 5-second timeout
       const queryPromise = dbClient
@@ -114,28 +181,32 @@ function initApp() {
 
       if (error) throw error;
       if (data && data.length > 0) {
-        // Set cachedCreators to ONLY the real creators from the database (no fake/dummy fallbacks)
         cachedCreators = data;
-
-        // Sync UI chips before re-rendering if on creators page
-        if (isBrowsePage) {
-          document.querySelectorAll('#filterChips .fchip').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.cat === state.activeCat);
-          });
-          document.querySelectorAll('#creatorLoc button').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.loc === state.activeLoc);
-          });
-        }
-
-        // Re-render with only the real database creators
-        renderCreatorsList();
-        if (Auth.getState().isLoggedIn) {
-          UI.unlockCreators();
-        }
+      } else {
+        // Database is empty, use local fallback creators
+        cachedCreators = window.REELANCE_DATA.creators || [];
       }
     } catch (e) {
-      // Silently ignore — fallback creators are already rendered
-      console.warn("loadCreators DB fetch failed (fallback already shown):", e.message || e);
+      console.warn("loadCreators DB fetch failed, using fallback:", e.message || e);
+      if (cachedCreators.length === 0 || cachedCreators === window.REELANCE_DATA.creators) {
+        cachedCreators = window.REELANCE_DATA.creators || [];
+      }
+    }
+
+    // Sync UI chips before re-rendering if on creators page
+    if (isBrowsePage) {
+      document.querySelectorAll('#filterChips .fchip').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === state.activeCat);
+      });
+      document.querySelectorAll('#creatorLoc button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.loc === state.activeLoc);
+      });
+    }
+
+    // Render the final list of real creators (or fallbacks if failed)
+    renderCreatorsList();
+    if (Auth.getState().isLoggedIn) {
+      UI.unlockCreators();
     }
   }
 
