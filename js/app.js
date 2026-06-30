@@ -86,21 +86,34 @@ function initApp() {
   }
 
   async function loadCreators() {
-    console.log('[DEBUG loadCreators] called, cachedCreators.length before:', cachedCreators.length);
+    // IMMEDIATE RENDER: Show local fallback creators right away so the grid is never blank
+    if (cachedCreators.length === 0) {
+      cachedCreators = window.REELANCE_DATA.creators || [];
+    }
+    renderCreatorsList();
+    if (Auth.getState().isLoggedIn) {
+      UI.unlockCreators();
+    }
+
+    // ASYNC ENHANCEMENT: Try to fetch fresh data from DB (with timeout to prevent hangs)
     try {
-      if (!supabase) throw new Error("Supabase client not initialized.");
-      await seedDatabaseIfEmpty();
-      const { data, error } = await supabase
+      if (!supabase) return;
+
+      // Race the Supabase query against a 5-second timeout
+      const queryPromise = supabase
         .from('creators')
         .select('*')
         .order('created_at', { ascending: false, nullsFirst: false });
-      
-      console.log('[DEBUG loadCreators] query done, data:', data?.length, 'error:', error);
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase query timed out after 5s')), 5000)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
       if (error) throw error;
-      if (!data || data.length === 0) {
-        console.warn("[DEBUG loadCreators] No creators returned, using local fallback");
-        cachedCreators = window.REELANCE_DATA.creators;
-      } else {
+      if (data && data.length > 0) {
+        // Merge database creators with local fallback creators
         const localCreators = window.REELANCE_DATA.creators || [];
         const merged = [...data];
         const existingIds = new Set(data.map(c => String(c.id)));
@@ -110,27 +123,26 @@ function initApp() {
           }
         }
         cachedCreators = merged;
-        console.log('[DEBUG loadCreators] merged total:', cachedCreators.length);
+
+        // Sync UI chips before re-rendering if on creators page
+        if (isBrowsePage) {
+          document.querySelectorAll('#filterChips .fchip').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.cat === state.activeCat);
+          });
+          document.querySelectorAll('#creatorLoc button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.loc === state.activeLoc);
+          });
+        }
+
+        // Re-render with the richer merged data
+        renderCreatorsList();
+        if (Auth.getState().isLoggedIn) {
+          UI.unlockCreators();
+        }
       }
     } catch (e) {
-      console.error("[DEBUG loadCreators] CATCH error:", e);
-      cachedCreators = window.REELANCE_DATA.creators;
-      console.log('[DEBUG loadCreators] fallback cachedCreators:', cachedCreators.length);
-    }
-    if (isBrowsePage) {
-      document.querySelectorAll('#filterChips .fchip').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.cat === state.activeCat);
-      });
-      document.querySelectorAll('#creatorLoc button').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.loc === state.activeLoc);
-      });
-    }
-
-    console.log('[DEBUG loadCreators] calling renderCreatorsList, cachedCreators.length:', cachedCreators.length);
-    renderCreatorsList();
-
-    if (Auth.getState().isLoggedIn) {
-      UI.unlockCreators();
+      // Silently ignore — fallback creators are already rendered
+      console.warn("loadCreators DB fetch failed (fallback already shown):", e.message || e);
     }
   }
 
@@ -271,13 +283,11 @@ function initApp() {
      CREATOR DIRECTORY LOGIC
      ========================================================================== */
   function renderCreatorsList() {
-    console.log('[DEBUG renderCreatorsList] called, cachedCreators.length:', cachedCreators.length);
     const grid = document.getElementById('creatorGrid');
     const loadMoreWrap = document.getElementById('loadMoreWrap');
-    if (!grid) { console.log('[DEBUG renderCreatorsList] NO GRID ELEMENT'); return; }
+    if (!grid) return;
 
     const allCreators = getCreatorsFromDB().filter(c => c.available !== false);
-    console.log('[DEBUG renderCreatorsList] allCreators after filter:', allCreators.length);
 
     let filtered = [];
     let isFilteredByDetectedCity = false;
