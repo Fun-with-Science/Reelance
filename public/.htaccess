@@ -1,4 +1,5 @@
 RewriteEngine On
+RewriteRule .* - [E=Cache-Control:no-cache]
 
 # 1. Redirect from /page.html to /page (Clean URLs)
 RewriteCond %{THE_REQUEST} \s/+(.*?)\.html[\s?] [NC]
