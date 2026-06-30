@@ -16,6 +16,11 @@ if (window.supabase && !window.supabaseClient) {
       detectSessionInUrl: true
     }
   });
+  window.supabaseAnonClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+      persistSession: false
+    }
+  });
 } else if (!window.supabase) {
   console.warn("Supabase library not loaded. Running in local fallback mode.");
 }

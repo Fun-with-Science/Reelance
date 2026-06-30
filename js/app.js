@@ -97,10 +97,11 @@ function initApp() {
 
     // ASYNC ENHANCEMENT: Try to fetch fresh data from DB (with timeout to prevent hangs)
     try {
-      if (!supabase) return;
+      const dbClient = window.supabaseAnonClient || window.supabaseClient || supabase;
+      if (!dbClient) return;
 
       // Race the Supabase query against a 5-second timeout
-      const queryPromise = supabase
+      const queryPromise = dbClient
         .from('creators')
         .select('*')
         .order('created_at', { ascending: false, nullsFirst: false });
@@ -113,16 +114,8 @@ function initApp() {
 
       if (error) throw error;
       if (data && data.length > 0) {
-        // Merge database creators with local fallback creators
-        const localCreators = window.REELANCE_DATA.creators || [];
-        const merged = [...data];
-        const existingIds = new Set(data.map(c => String(c.id)));
-        for (const lc of localCreators) {
-          if (!existingIds.has(String(lc.id))) {
-            merged.push(lc);
-          }
-        }
-        cachedCreators = merged;
+        // Set cachedCreators to ONLY the real creators from the database (no fake/dummy fallbacks)
+        cachedCreators = data;
 
         // Sync UI chips before re-rendering if on creators page
         if (isBrowsePage) {
@@ -134,7 +127,7 @@ function initApp() {
           });
         }
 
-        // Re-render with the richer merged data
+        // Re-render with only the real database creators
         renderCreatorsList();
         if (Auth.getState().isLoggedIn) {
           UI.unlockCreators();
