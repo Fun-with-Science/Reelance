@@ -8,7 +8,14 @@ const SUPABASE_URL = 'https://xfgpsojwqvrhznljoxgn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_XfkI8bJIU3eMaCfIxcnSPQ_QePN0lUQ';
 
 if (window.supabase && !window.supabaseClient) {
-  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+      persistSession: true,
+      storage: window.localStorage,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  });
 } else if (!window.supabase) {
   console.warn("Supabase library not loaded. Running in local fallback mode.");
 }
@@ -23,14 +30,14 @@ const Auth = (() => {
     mode: 'login'  // 'login' | 'signup'
   };
 
-  // --- Persist session in sessionStorage ---
+  // --- Persist session in localStorage ---
   function saveSession() {
-    sessionStorage.setItem('rl_session', JSON.stringify(state));
+    localStorage.setItem('rl_session', JSON.stringify(state));
   }
 
   function loadSession() {
     try {
-      const s = sessionStorage.getItem('rl_session');
+      const s = localStorage.getItem('rl_session');
       if (s) {
         state = JSON.parse(s);
         return true;
@@ -43,7 +50,7 @@ const Auth = (() => {
 
   // --- Public API ---
   async function init() {
-    // 1. First restore session from sessionStorage if present (for speed)
+    // 1. First restore session from localStorage if present (for speed)
     const restored = loadSession();
     if (restored && state.isLoggedIn) {
       UI.updateNavForUser(state.user, state.role);
@@ -66,6 +73,9 @@ const Auth = (() => {
             await logout();
             UI.resetNav();
             UI.lockCreators();
+            if (window.loadCreators) {
+              window.loadCreators();
+            }
           }
         }
       });
@@ -123,7 +133,9 @@ const Auth = (() => {
         UI.updateNavForUser(state.user, state.role);
         UI.unlockCreators();
         
-        if (window.renderCreatorsList) {
+        if (window.loadCreators) {
+          window.loadCreators();
+        } else if (window.renderCreatorsList) {
           window.renderCreatorsList();
         }
       } else {
@@ -186,7 +198,9 @@ const Auth = (() => {
           UI.updateNavForUser(state.user, state.role);
           UI.unlockCreators();
           
-          if (window.renderCreatorsList) {
+          if (window.loadCreators) {
+            window.loadCreators();
+          } else if (window.renderCreatorsList) {
             window.renderCreatorsList();
           }
         }
@@ -355,7 +369,7 @@ const Auth = (() => {
 
   async function logout() {
     state = { isLoggedIn: false, user: null, role: 'client', mode: 'login' };
-    sessionStorage.removeItem('rl_session');
+    localStorage.removeItem('rl_session');
     try {
       await supabase.auth.signOut();
     } catch(e) {}

@@ -3,20 +3,28 @@
    Main application controller
    ============================================= */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   const supabase = window.supabaseClient;
   let cachedCreators = [];
   // --- 1. Database Initialization ---
   // (Supabase auto-seeding is handled in loadCreators)
 
+  const isBrowsePage = window.location.pathname.includes('creators');
+
   // --- 2. Core State ---
   const state = {
     activeCat: 'All',
     activeLoc: 'all',
-    activeSort: 'rating',
+    activeSort: 'newest',
     itemsShown: 8,
     selectedCreatorId: null
   };
+
+  if (isBrowsePage) {
+    const params = new URLSearchParams(window.location.search);
+    state.activeCat = params.get('cat') || 'All';
+    state.activeLoc = params.get('loc') || 'all';
+  }
   let userCity = null;
 
   // --- 3. Run Page Initializations ---
@@ -83,15 +91,36 @@ document.addEventListener('DOMContentLoaded', () => {
       await seedDatabaseIfEmpty();
       const { data, error } = await supabase
         .from('creators')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false, nullsFirst: false });
       
       if (error) throw error;
-      cachedCreators = data || [];
+      if (!data || data.length === 0) {
+        console.warn("No creators returned from database (possibly due to RLS restrictions). Falling back to local data.");
+        cachedCreators = window.REELANCE_DATA.creators;
+      } else {
+        cachedCreators = data;
+      }
     } catch (e) {
       console.error("Error loading creators from Supabase:", e);
-      cachedCreators = REELANCE_DATA.creators;
+      cachedCreators = window.REELANCE_DATA.creators;
     }
+    // Sync UI chips before rendering if on creators page
+    if (isBrowsePage) {
+      document.querySelectorAll('#filterChips .fchip').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === state.activeCat);
+      });
+      document.querySelectorAll('#creatorLoc button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.loc === state.activeLoc);
+      });
+    }
+
     renderCreatorsList();
+
+    // If user is already logged in (restored from localStorage), unlock grid immediately
+    if (Auth.getState().isLoggedIn) {
+      UI.unlockCreators();
+    }
   }
 
   async function seedDatabaseIfEmpty() {
@@ -136,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const catGrid = document.getElementById('catGrid');
     if (catGrid) {
       catGrid.innerHTML = '';
-      REELANCE_DATA.categories.forEach((cat, idx) => {
+      window.REELANCE_DATA.categories.forEach((cat, idx) => {
         const catCard = document.createElement('div');
         catCard.className = 'cat reveal in';
         catCard.innerHTML = `
@@ -156,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stepsGrid = document.getElementById('stepsGrid');
     if (stepsGrid) {
       stepsGrid.innerHTML = '';
-      REELANCE_DATA.steps.forEach(step => {
+      window.REELANCE_DATA.steps.forEach(step => {
         const stepCard = document.createElement('div');
         stepCard.className = 'step reveal in';
         stepCard.innerHTML = `
@@ -174,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const testimonialsGrid = document.getElementById('testimonialsGrid');
     if (testimonialsGrid) {
       testimonialsGrid.innerHTML = '';
-      REELANCE_DATA.testimonials.forEach(t => {
+      window.REELANCE_DATA.testimonials.forEach(t => {
         const testCard = document.createElement('div');
         testCard.className = 'ccard reveal in';
         testCard.style.padding = '24px';
@@ -213,6 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
       UI.openModal('authBack');
       return;
     }
+    if (!isBrowsePage) {
+      window.location.href = `/creators.html?cat=${encodeURIComponent(category)}`;
+      return;
+    }
     state.activeCat = category;
     state.itemsShown = 8;
     // Highlight category chip
@@ -233,58 +266,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allCreators = getCreatorsFromDB().filter(c => c.available !== false);
 
-    // Apply Filters
+    let filtered = [];
     let isFilteredByDetectedCity = false;
-    let filtered = allCreators.filter(c => {
-      const matchCat = (state.activeCat === 'All' || c.cat === state.activeCat);
-      
-      let matchLoc = true;
-      if (state.activeLoc !== 'all') {
-        if (state.activeLoc === 'remote') {
-          matchLoc = (c.loc === 'remote');
-        } else if (state.activeLoc === 'local') {
-          if (userCity) {
-            matchLoc = c.city.toLowerCase().includes(userCity.toLowerCase());
-            if (matchLoc) isFilteredByDetectedCity = true;
-          } else {
-            matchLoc = (c.loc === 'local');
-          }
-        }
-      }
-      return matchCat && matchLoc;
-    });
-
-    // Fallback: If no creators match the detected city, show any local creators with a notice
     let cityFallback = false;
-    if (state.activeLoc === 'local' && userCity && filtered.length === 0) {
+
+    if (!isBrowsePage) {
+      // On homepage: show exactly 8 newest creators
+      filtered = [...allCreators];
+      
+      // Sort by newest
+      filtered.sort((a, b) => {
+        if (a.created_at && b.created_at) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
+        return (b.id || 0) - (a.id || 0);
+      });
+
+      // Slice to 8
+      filtered = filtered.slice(0, 8);
+      if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+    } else {
+      // Apply Filters on browse page
       filtered = allCreators.filter(c => {
         const matchCat = (state.activeCat === 'All' || c.cat === state.activeCat);
-        const matchLoc = (c.loc === 'local');
+        
+        let matchLoc = true;
+        if (state.activeLoc !== 'all') {
+          if (state.activeLoc === 'remote') {
+            matchLoc = (c.loc === 'remote');
+          } else if (state.activeLoc === 'local') {
+            if (userCity) {
+              matchLoc = c.city && c.city.toLowerCase().includes(userCity.toLowerCase());
+              if (matchLoc) isFilteredByDetectedCity = true;
+            } else {
+              matchLoc = (c.loc === 'local');
+            }
+          }
+        }
         return matchCat && matchLoc;
       });
-      cityFallback = true;
-    }
 
-    // Apply Sorting
-    filtered.sort((a, b) => {
-      if (state.activeSort === 'rating') {
-        return parseFloat(b.rating) - parseFloat(a.rating);
-      } else if (state.activeSort === 'rate-low') {
-        return parseRateValue(a.rate) - parseRateValue(b.rate);
-      } else if (state.activeSort === 'rate-high') {
-        return parseRateValue(b.rate) - parseRateValue(a.rate);
-      } else if (state.activeSort === 'newest') {
-        // Fallback: higher ID/index means newer
-        return (b.id || 0) - (a.id || 0);
+      // Fallback: If no creators match the detected city, show any local creators with a notice
+      if (state.activeLoc === 'local' && userCity && filtered.length === 0) {
+        filtered = allCreators.filter(c => {
+          const matchCat = (state.activeCat === 'All' || c.cat === state.activeCat);
+          const matchLoc = (c.loc === 'local');
+          return matchCat && matchLoc;
+        });
+        cityFallback = true;
       }
-      return 0;
-    });
+
+      // Apply Sorting on browse page
+      filtered.sort((a, b) => {
+        if (state.activeSort === 'rating') {
+          return parseFloat(b.rating) - parseFloat(a.rating);
+        } else if (state.activeSort === 'rate-low') {
+          return parseRateValue(a.rate) - parseRateValue(b.rate);
+        } else if (state.activeSort === 'rate-high') {
+          return parseRateValue(b.rate) - parseRateValue(a.rate);
+        } else if (state.activeSort === 'newest') {
+          if (a.created_at && b.created_at) {
+            return new Date(b.created_at) - new Date(a.created_at);
+          }
+          return (b.id || 0) - (a.id || 0);
+        }
+        return 0;
+      });
+    }
 
     // Update Result Hint dynamically
     const hint = document.getElementById('resultHint');
+    const isLoggedIn = Auth.getState().isLoggedIn;
+
+    // Always unlock the grid if user is logged in (belt-and-suspenders)
+    if (isLoggedIn) {
+      UI.unlockCreators();
+    }
+
     if (hint) {
-      if (!Auth.getState().isLoggedIn) {
+      if (!isLoggedIn) {
         hint.textContent = 'log in to browse';
+      } else if (!isBrowsePage) {
+        hint.textContent = 'featured creators online now';
       } else if (state.activeLoc === 'local' && userCity && !cityFallback) {
         hint.textContent = `${filtered.length} ${filtered.length === 1 ? 'creator' : 'creators'} near ${userCity} online now`;
       } else {
@@ -300,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (state.activeLoc === 'local' && userCity && cityFallback && filtered.length > 0) {
+    if (isBrowsePage && state.activeLoc === 'local' && userCity && cityFallback && filtered.length > 0) {
       const notice = document.createElement('div');
       notice.className = 'empty';
       notice.style.padding = '12px';
@@ -310,8 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.appendChild(notice);
     }
 
-    // Paginate items
-    const pageItems = filtered.slice(0, state.itemsShown);
+    // Paginate items if on browse page
+    const pageItems = isBrowsePage ? filtered.slice(0, state.itemsShown) : filtered;
 
     pageItems.forEach(c => {
       const initials = c.name.split(' ').map(n => n[0]).slice(0, 2).join('');
@@ -365,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle "Load more" visibility
-    if (loadMoreWrap) {
+    if (isBrowsePage && loadMoreWrap) {
       if (filtered.length > state.itemsShown && Auth.getState().isLoggedIn) {
         loadMoreWrap.style.display = 'block';
       } else {
@@ -456,6 +519,14 @@ document.addEventListener('DOMContentLoaded', () => {
          </button>`
       : '';
 
+    const showPortfolioButton = creator.portfolio && creator.portfolio.trim().length > 0;
+    const portfolioButtonHTML = showPortfolioButton
+      ? `<a href="${creator.portfolio}" target="_blank" rel="noopener noreferrer" class="btn" style="flex:1;justify-content:center;background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);display:inline-flex;align-items:center;gap:8px;font-weight:600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          View Portfolio
+         </a>`
+      : '';
+
     const ratingSectionHTML = isSelf
       ? ''
       : `
@@ -519,6 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ${ratingSectionHTML}
 
       <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+        ${portfolioButtonHTML}
         ${msgButtonHTML}
         ${waButtonHTML}
         <button class="btn btn-ghost" id="profileShareBtn" style="padding:13px 18px">
@@ -731,7 +803,17 @@ document.addEventListener('DOMContentLoaded', () => {
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
         const category = chip.dataset.cat;
-        triggerCategoryFilter(category);
+        if (!isBrowsePage) {
+          const isLoggedIn = Auth.getState().isLoggedIn;
+          if (!isLoggedIn) {
+            UI.showToast('Please log in to browse creative profiles.');
+            UI.openModal('authBack');
+            return;
+          }
+          window.location.href = `/creators.html?cat=${encodeURIComponent(category)}`;
+        } else {
+          triggerCategoryFilter(category);
+        }
       });
     });
 
@@ -753,23 +835,27 @@ document.addEventListener('DOMContentLoaded', () => {
           const searchCat = roleSelect.value;
           const searchLoc = activeLocBtn.dataset.loc === 'remote' ? 'remote' : 'local';
 
-          // Sync Homepage Filter State
-          state.activeCat = searchCat;
-          state.activeLoc = searchLoc === 'local' ? 'local' : 'remote'; // check if remote/local toggle matches
-          state.itemsShown = 8;
+          if (!isBrowsePage) {
+            window.location.href = `/creators.html?cat=${encodeURIComponent(searchCat)}&loc=${encodeURIComponent(searchLoc)}`;
+          } else {
+            // Sync Homepage Filter State
+            state.activeCat = searchCat;
+            state.activeLoc = searchLoc === 'local' ? 'local' : 'remote'; // check if remote/local toggle matches
+            state.itemsShown = 8;
 
-          // Sync filters ui
-          document.querySelectorAll('.fchip').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.cat === searchCat);
-          });
-          
-          document.querySelectorAll('#creatorLoc button').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.loc === searchLoc);
-          });
+            // Sync filters ui
+            document.querySelectorAll('.fchip').forEach(btn => {
+              btn.classList.toggle('active', btn.dataset.cat === searchCat);
+            });
+            
+            document.querySelectorAll('#creatorLoc button').forEach(btn => {
+              btn.classList.toggle('active', btn.dataset.loc === searchLoc);
+            });
 
-          renderCreatorsList();
-          scrollToSection('creators');
-          UI.showToast(`Search results loaded for ${searchCat} (${searchLoc})`);
+            renderCreatorsList();
+            scrollToSection('creators');
+            UI.showToast(`Search results loaded for ${searchCat} (${searchLoc})`);
+          }
         }
       });
     }
@@ -1161,6 +1247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('msgSendBtn');
     if (sendBtn) {
       sendBtn.addEventListener('click', async () => {
+        if (sendBtn.disabled) return;
         const subject = document.getElementById('msgSubject').value.trim();
         const body = document.getElementById('msgBody').value.trim();
 
@@ -1259,4 +1346,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Expose updates globally
   window.renderCreatorsList = renderCreatorsList;
   window.loadCreators = loadCreators;
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}

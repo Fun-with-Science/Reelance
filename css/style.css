@@ -138,6 +138,22 @@ img { display: block; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .rec { animation: none; } }
 
+/* ---- TOP PROMO BANNER ---- */
+.top-promo-banner {
+  background: linear-gradient(90deg, rgba(255, 123, 61, 0.16) 0%, rgba(52, 224, 204, 0.16) 100%);
+  border-bottom: 1px solid var(--line);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 16px;
+  text-align: center;
+  letter-spacing: 0.01em;
+  font-family: 'Inter', sans-serif;
+}
+.top-promo-banner b {
+  color: var(--teal);
+}
+
 /* ---- NAV ---- */
 header.nav {
   position: sticky;

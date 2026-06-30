@@ -12,3 +12,10 @@ RewriteRule ^(.*)$ $1.html [NC,L]
 # 3. Handle index redirects
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\ HTTP/ [NC]
 RewriteRule ^index$ / [R=301,L]
+
+# 4. Prevent caching of HTML files to ensure instant updates
+<FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</FilesMatch>

@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reelance Admin — Platform Control Panel</title>
+  <meta name="description" content="Administration panel for auditing user accounts, managing support tickets, and controlling platform access." />
+  <meta property="og:title" content="Reelance Admin — Platform Control Panel" />
+  <meta property="og:description" content="Administration panel for auditing user accounts, managing support tickets, and controlling platform access." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Reelance" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -128,6 +133,7 @@
       display: flex;
       flex-direction: column;
       gap: 32px;
+      min-width: 0;
     }
 
     /* Stat panel widgets */
@@ -199,6 +205,7 @@
 
     .admin-table {
       width: 100%;
+      min-width: 1100px;
       border-collapse: collapse;
       text-align: left;
     }
@@ -473,7 +480,7 @@
     }
 
     /* ---- RESPONSIVE MEDIA QUERIES ---- */
-    @media (max-width: 860px) {
+    @media (max-width: 1024px) {
       .admin-grid {
         grid-template-columns: 1fr;
         gap: 24px;
@@ -571,6 +578,11 @@
   </style>
 </head>
 <body>
+
+<!-- TOP PROMO BANNER -->
+<div class="top-promo-banner">
+  📢 <b>Creators:</b> Add your WhatsApp number to your profile to get more engagement! Clients can text you directly on WhatsApp.
+</div>
 
 <div class="admin-container">
   <!-- 1. LOGIN INTERFACE -->
@@ -706,6 +718,8 @@
                     <th>Full Name</th>
                     <th>Email Address</th>
                     <th>Role Badge</th>
+                    <th>Visibility</th>
+                    <th>Details & Portfolio</th>
                     <th>Joined Date</th>
                     <th>Control Actions</th>
                   </tr>
@@ -765,7 +779,7 @@
   const SUPABASE_URL = 'https://xfgpsojwqvrhznljoxgn.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_XfkI8bJIU3eMaCfIxcnSPQ_QePN0lUQ';
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initAppAdmin() {
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     // --- State ---
     let state = {
@@ -1018,7 +1032,8 @@
       // 2. Fetch creators
       const { data: creators, error: cError } = await supabase
         .from('creators')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false, nullsFirst: false });
       if (cError) {
         console.error("Creators error:", cError);
         tableError = true;
@@ -1107,19 +1122,66 @@
           }
         }
 
+        const creator = p.role === 'creator' ? state.creators.find(c => String(c.id) === String(p.id)) : null;
+        
+        let visibilityHTML = '—';
+        let detailsHTML = '—';
+        let approveBtnHTML = '';
+        
+        if (p.role === 'creator') {
+          if (creator) {
+            const isPublic = creator.available !== false;
+            visibilityHTML = isPublic 
+              ? `<span class="badge" style="background:rgba(52,224,204,0.12);color:var(--teal);font-weight:700">Public</span>`
+              : `<span class="badge" style="background:rgba(255,123,61,0.12);color:var(--orange);font-weight:700">Hidden</span>`;
+            
+            const details = [];
+            if (creator.portfolio && creator.portfolio.trim().length > 0) {
+              details.push(`<a href="${creator.portfolio}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);text-decoration:underline;font-weight:600">Portfolio</a>`);
+            } else {
+              details.push(`<span style="color:rgba(255,123,61,0.85);font-size:12px">❌ No Portfolio</span>`);
+            }
+            if (creator.whatsapp && creator.whatsapp.trim().length > 0) {
+              details.push(`<span style="font-size:11px;color:var(--text-muted)">WA: ${creator.whatsapp}</span>`);
+            }
+            detailsHTML = details.join(' <span style="color:rgba(255,255,255,0.15)">|</span> ');
+
+            if (!isPublic) {
+              approveBtnHTML = `<button class="btn-approve" style="background:rgba(52,224,204,0.12);color:var(--teal);border:1px solid rgba(52,224,204,0.2);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:8px">Approve</button>`;
+            } else {
+              approveBtnHTML = `<button class="btn-disapprove" style="background:rgba(255,123,61,0.12);color:var(--orange);border:1px solid rgba(255,123,61,0.2);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:8px">Disapprove</button>`;
+            }
+          } else {
+            visibilityHTML = `<span class="badge" style="background:rgba(255,0,0,0.12);color:#ff5f5f;font-weight:700">No Card</span>`;
+            detailsHTML = `<span style="color:rgba(255,0,0,0.7);font-size:12px">Profile Setup Pending</span>`;
+            approveBtnHTML = `<button class="btn-approve" style="background:rgba(52,224,204,0.12);color:var(--teal);border:1px solid rgba(52,224,204,0.2);padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-right:8px">Approve</button>`;
+          }
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="mono" style="font-size:11px;color:var(--muted-2)" title="${p.id}">${p.id.substring(0, 8)}...</td>
           <td style="font-weight:600">${p.name}</td>
           <td><a href="mailto:${p.email}" style="color:var(--teal);text-decoration:underline">${p.email}</a></td>
           <td><span class="badge badge-${p.role}">${p.role}</span></td>
+          <td>${visibilityHTML}</td>
+          <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${detailsHTML}</td>
           <td style="color:var(--muted)">${date}</td>
           <td style="white-space:nowrap">
+            ${approveBtnHTML}
             ${banBtnHTML}
             <button class="btn-delete" data-id="${p.id}" ${p.id === state.user.id ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>Delete</button>
           </td>
         `;
         
+        if (p.role === 'creator') {
+          const appBtn = tr.querySelector('.btn-approve');
+          if (appBtn) appBtn.addEventListener('click', () => approveCreatorAccount(p.id, p.name, !!creator));
+          
+          const disBtn = tr.querySelector('.btn-disapprove');
+          if (disBtn) disBtn.addEventListener('click', () => disapproveCreatorAccount(p.id, p.name));
+        }
+
         if (p.id !== state.user.id && p.role !== 'admin') {
           if (p.is_banned) {
             const ubBtn = tr.querySelector('.btn-unban');
@@ -1133,6 +1195,64 @@
         tr.querySelector('.btn-delete').addEventListener('click', () => deleteUserAccount(p.id, p.name));
         usersTableBody.appendChild(tr);
       });
+    }
+
+    async function disapproveCreatorAccount(userId, userName) {
+      if (!confirm(`Are you sure you want to disapprove and hide ${userName} from the marketplace?`)) {
+        return;
+      }
+      try {
+        const { error } = await supabase
+          .from('creators')
+          .update({ available: false })
+          .eq('id', userId);
+        
+        if (error) throw error;
+        
+        showToast(`${userName} has been disapproved and hidden.`);
+        await fetchSystemData();
+        renderOverview();
+        renderUsers();
+      } catch (err) {
+        showToast('Failed to disapprove creator: ' + err.message);
+      }
+    }
+
+    async function approveCreatorAccount(userId, userName, hasCard) {
+      if (!confirm(`Are you sure you want to approve ${userName} and list them publicly on the marketplace?`)) {
+        return;
+      }
+      try {
+        if (hasCard) {
+          const { error } = await supabase
+            .from('creators')
+            .update({ available: true })
+            .eq('id', userId);
+          if (error) throw error;
+        } else {
+          // Create profile card for them
+          const userProfile = state.profiles.find(p => p.id === userId);
+          const { error } = await supabase
+            .from('creators')
+            .insert({
+              id: userId,
+              name: userProfile ? userProfile.name : userName,
+              email: userProfile ? userProfile.email : '',
+              available: true,
+              portfolio: '',
+              whatsapp: '',
+              bio: '',
+              skills: []
+            });
+          if (error) throw error;
+        }
+        showToast(`${userName} has been successfully approved and listed!`);
+        await fetchSystemData();
+        renderOverview();
+        renderUsers();
+      } catch (err) {
+        showToast('Failed to approve creator: ' + err.message);
+      }
     }
 
     async function banUserAccount(userId, userName, currentRole) {
@@ -1379,7 +1499,13 @@
 
     // Run Initial session checks
     initAdmin();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAppAdmin);
+  } else {
+    initAppAdmin();
+  }
 </script>
 </body>
 </html>

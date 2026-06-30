@@ -13,6 +13,7 @@ export default defineConfig({
         terms: resolve(__dirname, 'terms.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
         admin: resolve(__dirname, 'admin.html'),
+        creators: resolve(__dirname, 'creators.html'),
       }
     }
   }

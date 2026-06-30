@@ -3,22 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reelance — Hire the Cut. Skip the Chaos.</title>
-  <meta name="description" content="Reelance is the free marketplace connecting clients with vetted video editors, animators, motion designers, and creative pros — no fees, no middlemen." />
-  <meta property="og:title" content="Reelance — Hire the Cut. Skip the Chaos." />
-  <meta property="og:description" content="Search thousands of vetted video editors, animators, and motion artists — then message them directly. No fees, no middleman." />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Reelance" />
-  
-  <!-- Google Site Name Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Reelance",
-    "url": "https://reelance.codingtechnyks.com"
-  }
-  </script>
+  <title>Browse Creators — Reelance</title>
+  <meta name="description" content="Search and browse vetted video editors, animators, and motion artists — then message them directly. No fees, no middleman." />
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,13 +23,13 @@
 <!-- NAV -->
 <header class="nav" id="mainNav">
   <div class="wrap nav-inner">
-    <a href="#" class="logo">
+    <a href="/" class="logo">
       <span class="logo-mark"></span>Reel<b>ance</b>
     </a>
     <nav class="links" aria-label="Main navigation">
-      <a href="/creators.html">Browse</a>
-      <a href="#how">How it works</a>
-      <a href="#testimonials">Reviews</a>
+      <a href="/creators.html" class="active">Browse</a>
+      <a href="/#how">How it works</a>
+      <a href="/#testimonials">Reviews</a>
     </nav>
     <div class="nav-right">
       <div class="nav-cta" id="navCta">
@@ -69,136 +55,58 @@
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
   <a href="/creators.html">Browse</a>
-  <a href="#how">How it works</a>
-  <a href="#testimonials">Reviews</a>
+  <a href="/#how">How it works</a>
+  <a href="/#testimonials">Reviews</a>
   <button class="btn btn-ghost" id="mobileJoinBtn">Join as creator</button>
   <button class="btn btn-primary" id="mobileGetStartedBtn">Get started — free</button>
   <button class="btn btn-ghost" id="mobileDashBtn" style="display:none" onclick="window.location.href='dashboard'">Dashboard</button>
   <button class="btn btn-primary" id="mobileLogoutBtn" style="display:none">Log out</button>
 </div>
 
-<!-- HERO -->
-<section class="hero wrap">
-  <span class="eyebrow reveal"><span class="rec"></span>The marketplace for the online creator industry</span>
-  <h1 class="reveal">Hire the cut.<br><span class="grad">Skip the chaos.</span></h1>
-  <p class="sub reveal">Search <span id="heroCreatorCount" class="hero-count">5,840</span> vetted video editors, animators, and motion artists — then message them directly. No fees, no middleman.</p>
-  <div class="reveal">
-    <span class="freeline">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
-      100% free for clients and creators
-    </span>
-  </div>
-
-  <!-- Stats Row -->
-  <div class="stats-row reveal">
-    <div class="stat-item">
-      <span class="stat-num" data-target="5840" data-suffix="">0</span>
-      <span class="stat-label">Creators</span>
-    </div>
-    <div class="stat-div"></div>
-    <div class="stat-item">
-      <span class="stat-num" data-target="12400" data-suffix="">0</span>
-      <span class="stat-label">Projects Done</span>
-    </div>
-    <div class="stat-div"></div>
-    <div class="stat-item">
-      <span class="stat-num" data-target="98" data-suffix="%">0</span>
-      <span class="stat-label">Satisfaction Rate</span>
-    </div>
-    <div class="stat-div"></div>
-    <div class="stat-item">
-      <span class="stat-num" data-target="0" data-suffix="% fees">0</span>
-      <span class="stat-label">Commission Taken</span>
-    </div>
-  </div>
-
-  <div class="console reveal" role="search" aria-label="Search creators">
-    <div class="console-top">
-      <span class="console-label">// find a creator</span>
-      <span class="console-label mono" id="resultHint">log in to browse</span>
-    </div>
-    <div class="console-row">
-      <div class="field">
-        <span class="ic" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="m3 16 5-5c.9-.9 2.1-.9 3 0l5 5"/><path d="m14 14 1-1c.9-.9 2.1-.9 3 0l3 3"/><circle cx="15" cy="8" r="1.2"/></svg>
-        </span>
-        <div style="flex:1">
-          <label for="roleSel">I'm looking for</label>
-          <select id="roleSel" aria-label="Select creator type">
-            <option value="Video Editor">Video Editor</option>
-            <option value="Animation">2D / Motion Animator</option>
-            <option value="Motion Graphics">Motion Graphics Designer</option>
-            <option value="VFX">VFX Artist</option>
-            <option value="Colorist">Colorist</option>
-            <option value="Thumbnail">Thumbnail Designer</option>
-            <option value="Sound">Sound Designer</option>
-          </select>
-        </div>
-      </div>
-      <div class="field" style="padding:8px">
-        <div style="flex:1">
-          <label style="padding-left:6px;margin-bottom:4px">Where</label>
-          <div class="seg" id="heroLoc">
-            <button class="active loc-remote" data-loc="remote" aria-pressed="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>Remote
-            </button>
-            <button data-loc="near" class="loc-near" aria-pressed="false">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Near me
-            </button>
-          </div>
-        </div>
-      </div>
-      <button class="btn btn-primary search-btn" id="heroSearchBtn" aria-label="Search creators">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search
-      </button>
-    </div>
-    <div class="chips" id="quickChips">
-      <span class="chip-quick" data-cat="Video Editor">YouTube long-form</span>
-      <span class="chip-quick" data-cat="Video Editor">Reels &amp; Shorts</span>
-      <span class="chip-quick" data-cat="Sound">Podcast clips</span>
-      <span class="chip-quick" data-cat="Animation">Explainer animation</span>
-      <span class="chip-quick" data-cat="Colorist">Wedding films</span>
-    </div>
-  </div>
-
-  <div class="strip reveal">
-    <div class="strip-bar"><span>TIMELINE</span><span class="line"></span><span>00:00:00:00</span><span class="line"></span><span>BROWSE ▸</span></div>
-    <div class="track" id="track">
-      <span class="playhead" id="playhead"></span>
-      <span class="clip c1"><span class="kf"></span>Video Editors · 2,140</span>
-      <span class="clip c2"><span class="kf"></span>VFX · 320</span>
-      <span class="clip c3"><span class="kf"></span>Animators · 1,090</span>
-      <span class="clip c4"><span class="kf"></span>Color · 410</span>
-      <span class="clip c5"><span class="kf"></span>Motion GFX · 880</span>
-      <span class="clip c6"><span class="kf"></span>Sound · 260</span>
-    </div>
-  </div>
-</section>
-
-<!-- TRUSTED BY -->
-<section class="trusted-section wrap reveal">
-  <p class="trusted-label">Trusted by creators at</p>
-  <div class="trusted-logos" id="trustedLogos">
-    <span class="tlogo">YouTube</span>
-    <span class="tlogo">Netflix</span>
-    <span class="tlogo">Spotify</span>
-    <span class="tlogo">Vice Media</span>
-    <span class="tlogo">BuzzFeed</span>
-    <span class="tlogo">Vox</span>
-    <span class="tlogo">Complex</span>
-    <span class="tlogo">Condé Nast</span>
-  </div>
-</section>
-
-<!-- CREATORS -->
-<section class="sec wrap" id="creators">
+<!-- DIRECTORY HEADER -->
+<section class="sec wrap" style="padding-top:140px;padding-bottom:10px">
   <div class="sec-head reveal">
-    <span class="eyebrow">// featured creators</span>
-    <h2>Talent that's online right now</h2>
-    <p>Filter by craft and location. Every profile is portfolio-verified before it goes live.</p>
+    <span class="eyebrow">// browse talent</span>
+    <h2>Creative talent online now</h2>
+    <p>Filter by specialization, location, or rates. Every profile is portfolio-verified.</p>
+  </div>
+</section>
+
+<!-- CREATORS DIRECTORY SECTION -->
+<section class="sec wrap" id="creators" style="padding-top:0">
+  <div class="filters reveal" id="filters">
+    <div class="filter-chips" id="filterChips">
+      <button class="fchip active" data-cat="All">All</button>
+      <button class="fchip" data-cat="Video Editor">Video Editor</button>
+      <button class="fchip" data-cat="Animation">Animator</button>
+      <button class="fchip" data-cat="Motion Graphics">Motion GFX</button>
+      <button class="fchip" data-cat="VFX">VFX</button>
+      <button class="fchip" data-cat="Colorist">Colorist</button>
+      <button class="fchip" data-cat="Thumbnail">Thumbnail</button>
+      <button class="fchip" data-cat="Sound">Sound</button>
+    </div>
+    <div class="filter-right">
+      <div class="loc-toggle" id="creatorLoc">
+        <button class="active" data-loc="all">All</button>
+        <button data-loc="remote">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>Remote
+        </button>
+        <button data-loc="local">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Near me
+        </button>
+      </div>
+      <div class="sort-wrap">
+        <select id="sortSelect" class="sort-select" aria-label="Sort creators">
+          <option value="rating">Top Rated</option>
+          <option value="rate-low">Price: Low → High</option>
+          <option value="rate-high">Price: High → Low</option>
+          <option value="newest" selected>Newest</option>
+        </select>
+      </div>
+    </div>
   </div>
 
-  <div class="creators-wrap locked" id="creatorsWrap" style="margin-top:24px">
+  <div class="creators-wrap locked" id="creatorsWrap">
     <div class="creators" id="creatorGrid"></div>
     <div class="lockwall" id="lockwall">
       <div class="lockcard">
@@ -213,64 +121,8 @@
     </div>
   </div>
 
-  <div class="explore-more-wrap" style="text-align:center;margin-top:48px">
-    <a href="/creators.html" class="btn btn-primary btn-lg" style="text-decoration:none">Explore All Creators</a>
-  </div>
-</section>
-
-<!-- CATEGORIES -->
-<section class="sec wrap" id="categories">
-  <div class="sec-head reveal">
-    <span class="eyebrow">// categories</span>
-    <h2>Every role on your timeline</h2>
-    <p>Whatever the project needs, there's a specialist for it. Pick a lane and start browsing.</p>
-  </div>
-  <div class="cat-grid" id="catGrid">
-    <!-- Rendered by JS -->
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="sec how" id="how">
-  <div class="wrap">
-    <div class="sec-head center reveal">
-      <span class="eyebrow" style="justify-content:center"><span class="rec"></span>free, start to finish</span>
-      <h2>Three steps from sign-up to hire</h2>
-      <p>Create a free account, find your person, and start the conversation. That's the whole flow.</p>
-    </div>
-    <div class="steps" id="stepsGrid">
-      <!-- Rendered by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="sec wrap" id="testimonials">
-  <div class="sec-head center reveal">
-    <span class="eyebrow" style="justify-content:center"><span class="rec"></span>testimonials</span>
-    <h2>Creators and clients love it</h2>
-    <p>Real reviews from real people who've built real things together.</p>
-  </div>
-  <div class="testimonials-grid" id="testimonialsGrid">
-    <!-- Rendered by JS -->
-  </div>
-</section>
-
-
-<!-- FINAL CTA -->
-<section class="wrap">
-  <div class="finale reveal">
-    <span class="eyebrow" style="justify-content:center"><span class="rec"></span>roll camera</span>
-    <h2>Your next collaborator is one log-in away</h2>
-    <p>Footage to cut or skills to sell — Reelance is where the two find each other. Free, always.</p>
-    <div class="dual">
-      <button class="btn btn-primary btn-lg" id="ctaFindBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Find a creator
-      </button>
-      <button class="btn btn-ghost btn-lg" id="ctaJoinBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>Join as a creator
-      </button>
-    </div>
+  <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+    <button class="btn btn-ghost btn-lg" id="loadMoreBtn">Load more creators</button>
   </div>
 </section>
 
@@ -279,7 +131,7 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <a href="#" class="logo"><span class="logo-mark"></span>Reel<b>ance</b></a>
+        <a href="/" class="logo"><span class="logo-mark"></span>Reel<b>ance</b></a>
         <p class="foot-blurb">The free marketplace connecting clients with editors, animators, and creative pros — directly.</p>
         <div class="foot-social">
           <a href="#" aria-label="Twitter/X" class="social-icon">
@@ -295,16 +147,16 @@
       </div>
       <div>
         <h4>Browse</h4>
-        <a href="#" data-filter="Video Editor">Video editors</a>
-        <a href="#" data-filter="Animation">Animators</a>
-        <a href="#" data-filter="Motion Graphics">Motion designers</a>
-        <a href="#" data-filter="Colorist">Colorists</a>
-        <a href="#" data-filter="VFX">VFX artists</a>
-        <a href="#" data-filter="Thumbnail">Thumbnail designers</a>
+        <a href="/creators.html" data-filter="Video Editor">Video editors</a>
+        <a href="/creators.html" data-filter="Animation">Animators</a>
+        <a href="/creators.html" data-filter="Motion Graphics">Motion designers</a>
+        <a href="/creators.html" data-filter="Colorist">Colorists</a>
+        <a href="/creators.html" data-filter="VFX">VFX artists</a>
+        <a href="/creators.html" data-filter="Thumbnail">Thumbnail designers</a>
       </div>
       <div>
         <h4>Platform</h4>
-        <a href="#how">How it works</a>
+        <a href="/#how">How it works</a>
       </div>
       <div>
         <h4>Company</h4>
@@ -343,7 +195,7 @@
 
     <button class="gbtn" id="googleAuthBtn">
       <svg width="18" height="18" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.5 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2-1.9 3.3-4.7 3.3-7.8Z"/>
+        <path fill="#4285F4" d="M22.5 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2-1.9(3.3-4.7 3.3-7.8Z"/>
         <path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.5-2.7c-1 .7-2.3 1.1-3.8 1.1-2.9 0-5.4-2-6.3-4.6H2v2.8A11 11 0 0 0 12 23Z"/>
         <path fill="#FBBC05" d="M5.7 14.1a6.6 6.6 0 0 1 0-4.2V7.1H2a11 11 0 0 0 0 9.8l3.7-2.8Z"/>
         <path fill="#EA4335" d="M12 5.4c1.6 0 3 .6 4.2 1.6l3.1-3.1A11 11 0 0 0 2 7.1l3.7 2.8C6.6 7.3 9.1 5.4 12 5.4Z"/>
