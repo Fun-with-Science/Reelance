@@ -49,15 +49,73 @@ function initApp() {
   /* ==========================================================================
      DATABASE HELPERS & GEOLOCATION
      ========================================================================== */
-  async function detectUserLocation() {
+  async function detectUserLocation(forcePrompt = false) {
+    // 1. Check if we already have a saved city in localStorage
+    const savedCity = localStorage.getItem('rl_user_city');
+    if (savedCity && !forcePrompt) {
+      userCity = savedCity;
+      console.log("Loaded saved city from localStorage:", userCity);
+      if (state.activeLoc === 'local') {
+        renderCreatorsList();
+      }
+      return;
+    }
+
+    // 2. Try HTML5 Geolocation API (Highly Accurate)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            // Use free reverse geocoding from OpenStreetMap Nominatim API
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+            if (response.ok) {
+              const data = await response.json();
+              const city = data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.county;
+              if (city) {
+                userCity = city;
+                localStorage.setItem('rl_user_city', userCity);
+                console.log("HTML5 Geolocation detected city:", userCity);
+                UI.showToast(`Location detected: ${userCity}`);
+                if (state.activeLoc === 'local') {
+                  renderCreatorsList();
+                }
+                return;
+              }
+            }
+            // If API didn't return city, fallback to IP
+            fallbackToIpGeolocation(forcePrompt);
+          } catch (e) {
+            console.warn("Reverse geocoding failed, falling back to IP:", e);
+            fallbackToIpGeolocation(forcePrompt);
+          }
+        },
+        (error) => {
+          console.warn("HTML5 Geolocation denied/failed, falling back to IP:", error);
+          if (forcePrompt) {
+            promptForCity();
+          } else {
+            fallbackToIpGeolocation(forcePrompt);
+          }
+        },
+        { timeout: 6000 }
+      );
+    } else {
+      fallbackToIpGeolocation(forcePrompt);
+    }
+  }
+
+  async function fallbackToIpGeolocation(forcePrompt = false) {
     try {
       const response = await fetch('https://ipapi.co/json/');
       if (response.ok) {
         const data = await response.json();
         if (data && data.city) {
           userCity = data.city;
-          console.log("Detected user city:", userCity);
-          UI.showToast(`Location detected: ${userCity}, ${data.country_name || 'IN'}`);
+          localStorage.setItem('rl_user_city', userCity);
+          console.log("Detected user city (IP):", userCity);
+          UI.showToast(`Location detected: ${userCity}`);
           if (state.activeLoc === 'local') {
             renderCreatorsList();
           }
@@ -74,15 +132,35 @@ function initApp() {
         const data = await response2.json();
         if (data && data.city && data.city !== "Not Found") {
           userCity = data.city;
-          console.log("Detected user city (fallback):", userCity);
+          localStorage.setItem('rl_user_city', userCity);
+          console.log("Detected user city (fallback IP):", userCity);
           UI.showToast(`Location detected: ${userCity}`);
           if (state.activeLoc === 'local') {
             renderCreatorsList();
           }
+          return;
         }
       }
     } catch (e) {
       console.warn("Fallback location detection failed:", e);
+    }
+
+    // If everything failed or was blocked, prompt the user manually
+    promptForCity();
+  }
+
+  function promptForCity() {
+    const input = prompt("Enter your city name to find nearby creators:", userCity || "");
+    if (input !== null) {
+      const cleanInput = input.trim();
+      if (cleanInput) {
+        userCity = cleanInput;
+        localStorage.setItem('rl_user_city', userCity);
+        UI.showToast(`Location set to: ${userCity}`);
+        if (state.activeLoc === 'local') {
+          renderCreatorsList();
+        }
+      }
     }
   }
 
@@ -437,7 +515,18 @@ function initApp() {
       } else if (!isBrowsePage) {
         hint.textContent = 'featured creators online now';
       } else if (state.activeLoc === 'local' && userCity && !cityFallback) {
-        hint.textContent = `${filtered.length} ${filtered.length === 1 ? 'creator' : 'creators'} near ${userCity} online now`;
+        hint.innerHTML = `${filtered.length} ${filtered.length === 1 ? 'creator' : 'creators'} near <span id="changeLocBtn" style="color:var(--teal);text-decoration:underline;cursor:pointer">${userCity}</span> online now`;
+        
+        // Use a short timeout to attach listener once rendered in DOM
+        setTimeout(() => {
+          const btn = document.getElementById('changeLocBtn');
+          if (btn) {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              promptForCity();
+            });
+          }
+        }, 50);
       } else {
         hint.textContent = `${filtered.length} ${filtered.length === 1 ? 'creator' : 'creators'} online now`;
       }
@@ -883,6 +972,10 @@ function initApp() {
         });
         btn.classList.add('active');
         btn.setAttribute('aria-pressed', 'true');
+
+        if (btn.dataset.loc === 'near') {
+          detectUserLocation(true);
+        }
       });
     });
 
@@ -982,7 +1075,16 @@ function initApp() {
 
         state.activeLoc = btn.dataset.loc;
         state.itemsShown = 8;
-        renderCreatorsList();
+
+        if (state.activeLoc === 'local') {
+          if (!userCity) {
+            detectUserLocation(true);
+          } else {
+            renderCreatorsList();
+          }
+        } else {
+          renderCreatorsList();
+        }
       });
     });
 
