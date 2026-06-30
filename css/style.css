@@ -48,8 +48,9 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(900px 500px at 12% -8%, rgba(255,123,61,0.16), transparent 60%),
-    radial-gradient(800px 520px at 92% 4%, rgba(52,224,204,0.12), transparent 60%);
+    radial-gradient(1000px 1000px at 10% -10%, rgba(13, 148, 136, 0.15), transparent 70%),
+    radial-gradient(1100px 1100px at 90% 10%, rgba(59, 130, 246, 0.12), transparent 70%),
+    radial-gradient(900px 900px at 50% 80%, rgba(139, 92, 246, 0.08), transparent 60%);
 }
 
 .wrap {
@@ -857,16 +858,24 @@ nav.links a:hover::after { transform: scaleX(1); }
 .creators-wrap.locked .creators { filter: blur(8px); pointer-events: none; user-select: none; }
 
 .ccard {
-  background: var(--panel);
-  border: 1px solid var(--line);
+  background: rgba(32, 30, 46, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius);
   padding: 20px;
-  transition: transform .22s ease, border-color .22s ease, box-shadow .22s;
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s, background .22s;
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
 }
-.ccard:hover { transform: translateY(-5px); border-color: var(--line-2); box-shadow: var(--shadow); }
+.ccard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(32, 30, 46, 0.55);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
 .ccard-top { display: flex; align-items: center; gap: 13px; }
 .avatar {
   width: 50px;
@@ -1964,8 +1973,11 @@ body.light-theme {
 /* Light Theme Background Gradient Glow */
 body.light-theme::before {
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(234, 88, 12, 0.07), transparent 70%),
-    radial-gradient(1000px 600px at 90% 0%, rgba(13, 148, 136, 0.06), transparent 70%);
+    radial-gradient(800px 800px at 15% 15%, rgba(168, 85, 247, 0.15), transparent 60%),
+    radial-gradient(900px 900px at 85% 25%, rgba(236, 72, 153, 0.14), transparent 60%),
+    radial-gradient(800px 800px at 50% 85%, rgba(6, 182, 212, 0.12), transparent 60%),
+    radial-gradient(600px 600px at 30% 65%, rgba(99, 102, 241, 0.12), transparent 60%),
+    #F8FAFC;
 }
 
 /* Top Promo Banner Legibility */
@@ -1996,16 +2008,16 @@ body.light-theme .btn-primary:hover {
 
 /* Glassmorphism overrides for cards and header in light mode */
 body.light-theme .ccard {
-  background: var(--panel);
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.03);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
 }
 body.light-theme .ccard:hover {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.6);
   border-color: rgba(13, 148, 136, 0.35);
-  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 20px 40px -10px rgba(31, 38, 135, 0.1);
 }
 body.light-theme header.nav {
   background: rgba(255, 255, 255, 0.75);
@@ -2078,6 +2090,8 @@ body.light-theme .cat:hover {
 body.light-theme .mcard, body.light-theme .ticket-item {
   background: var(--panel);
   border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 /* Sidebar navigation active state */
@@ -2089,4 +2103,12 @@ body.light-theme .sb-link.active {
 body.light-theme .ametric, body.light-theme .atab {
   background: var(--panel);
   border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* General glassmorphic helpers for other static content cards */
+.dash-card, .admin-card, .login-card, .about-card, .contact-card {
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
