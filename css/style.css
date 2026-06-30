@@ -2065,14 +2065,20 @@ body.light-theme .creators-wrap.locked .lock-card {
 }
 
 /* Active navigation link in light mode */
+body.light-theme .logo {
+  color: #0F172A !important;
+}
+body.light-theme nav.links a {
+  color: #475569 !important;
+}
 body.light-theme nav.links a.active {
-  color: var(--text);
+  color: #0F172A !important;
 }
 body.light-theme nav.links a.active::after {
-  background: var(--text);
+  background: #0F172A !important;
 }
 body.light-theme nav.links a:hover {
-  color: var(--text);
+  color: #0F172A !important;
 }
 
 /* Category Lane background/border overrides in light mode */
