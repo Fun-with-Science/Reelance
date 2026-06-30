@@ -99,7 +99,17 @@ function initApp() {
         console.warn("No creators returned from database (possibly due to RLS restrictions). Falling back to local data.");
         cachedCreators = window.REELANCE_DATA.creators;
       } else {
-        cachedCreators = data;
+        // Merge database creators with local fallback creators to ensure a complete listing
+        // is always shown regardless of RLS restrictions.
+        const localCreators = window.REELANCE_DATA.creators || [];
+        const merged = [...data];
+        const existingIds = new Set(data.map(c => String(c.id)));
+        for (const lc of localCreators) {
+          if (!existingIds.has(String(lc.id))) {
+            merged.push(lc);
+          }
+        }
+        cachedCreators = merged;
       }
     } catch (e) {
       console.error("Error loading creators from Supabase:", e);
