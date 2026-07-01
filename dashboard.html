@@ -1666,7 +1666,7 @@
           cropperState.posY = (containerSize - displayH) / 2;
           
           updateCropperTransform();
-          modal.style.display = 'flex';
+          modal.classList.add('show');
         };
         cropImg.src = e.target.result;
       };
@@ -1761,7 +1761,7 @@
       });
       
       cancelBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
         const fileInput = document.getElementById('avatarFileInput');
         if (fileInput) fileInput.value = '';
       });
@@ -1799,7 +1799,7 @@
           preview.style.background = 'transparent';
         }
         
-        modal.style.display = 'none';
+        modal.classList.remove('show');
       });
     }
 
