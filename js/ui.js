@@ -62,7 +62,20 @@ const UI = (() => {
     const initial = (displayName && displayName[0] || 'U').toUpperCase();
 
     if (uname) uname.textContent = displayName ? displayName.split(' ')[0] : 'You';
-    if (uava) uava.textContent = initial;
+    if (uava) {
+      // Apply clean role placeholder class
+      uava.className = 'uava';
+      uava.classList.add(`role-${role || 'client'}`);
+
+      if (user && user.avatar) {
+        uava.innerHTML = `<img src="${user.avatar}" alt="${displayName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" />`;
+        uava.style.background = 'transparent';
+      } else {
+        uava.textContent = initial;
+        uava.style.background = '';
+        uava.style.color = '';
+      }
+    }
     if (uroleBadge) {
       if (role === 'admin') {
         uroleBadge.textContent = 'Admin';

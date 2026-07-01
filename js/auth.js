@@ -135,7 +135,7 @@ const Auth = (() => {
           email: session.user.email,
           name: profile.name,
           role: profile.role,
-          avatar: session.user.user_metadata?.avatar_url || null,
+          avatar: profile.avatar || session.user.user_metadata?.avatar_url || null,
           createdAt: session.user.created_at
         };
         state.role = profile.role;
@@ -271,7 +271,7 @@ const Auth = (() => {
       email: data.user.email,
       name: profile.name,
       role: profile.role,
-      avatar: null,
+      avatar: profile.avatar || null,
       createdAt: data.user.created_at
     };
     state.role = role;

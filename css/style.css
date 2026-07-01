@@ -251,13 +251,38 @@ nav.links a:hover::after { transform: scaleX(1); }
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--grade);
+  background: rgba(15, 23, 42, 0.08);
   display: grid;
   place-items: center;
-  color: #170d06;
+  color: var(--text);
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   font-size: 13px;
+  overflow: hidden;
+}
+.nav-user .uava.role-client {
+  background: rgba(255, 123, 61, 0.12) !important;
+  color: #FF7B3D !important;
+}
+.nav-user .uava.role-creator {
+  background: rgba(52, 224, 204, 0.12) !important;
+  color: #34E0CC !important;
+}
+.nav-user .uava.role-admin {
+  background: rgba(168, 85, 247, 0.12) !important;
+  color: #a855f7 !important;
+}
+body.light-theme .nav-user .uava.role-client {
+  background: rgba(234, 88, 12, 0.12) !important;
+  color: #EA580C !important;
+}
+body.light-theme .nav-user .uava.role-creator {
+  background: rgba(13, 148, 136, 0.12) !important;
+  color: #0D9488 !important;
+}
+body.light-theme .nav-user .uava.role-admin {
+  background: rgba(168, 85, 247, 0.12) !important;
+  color: #9333EA !important;
 }
 .nav-user .urole-badge {
   font-size: 11px;

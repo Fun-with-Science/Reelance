@@ -580,9 +580,13 @@ function initApp() {
         ? `<button class="connect" data-id="${c.id}" disabled style="opacity:0.5; cursor:not-allowed">You</button>`
         : `<button class="connect" data-id="${c.id}">Connect</button>`;
 
+      const avatarHTML = c.avatar
+        ? `<img src="${c.avatar}" alt="${c.name}" class="avatar" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0" />`
+        : `<div class="avatar" style="background:rgba(52,224,204,0.12);color:var(--teal);width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:16px;flex-shrink:0">${initials}</div>`;
+
       card.innerHTML = `
         <div class="ccard-top" style="cursor:pointer">
-          <div class="avatar" style="background:linear-gradient(135deg, ${c.grad[0]}, ${c.grad[1]})">${initials}</div>
+          ${avatarHTML}
           <div style="flex:1">
             <h3 style="display:flex;align-items:center">${c.name} ${verifiedBadge}</h3>
             <div class="role">${c.role}</div>
@@ -736,9 +740,13 @@ function initApp() {
         </div>
       `;
 
+    const detailAvatarHTML = creator.avatar
+      ? `<img src="${creator.avatar}" alt="${creator.name}" style="width:80px;height:80px;border-radius:20px;object-fit:cover;flex-shrink:0" />`
+      : `<div class="avatar" style="width:80px;height:80px;border-radius:20px;font-size:26px;background:rgba(52,224,204,0.12);color:var(--teal);display:grid;place-items:center;font-weight:700;flex-shrink:0">${initials}</div>`;
+
     content.innerHTML = `
       <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap">
-        <div class="avatar" style="width:80px;height:80px;border-radius:20px;font-size:26px;background:linear-gradient(135deg, ${creator.grad[0]}, ${creator.grad[1]});flex-shrink:0">${initials}</div>
+        ${detailAvatarHTML}
         <div style="flex:1;min-width:200px">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
             <h2 id="profileTitle" style="margin-top:0">${creator.name}</h2>
