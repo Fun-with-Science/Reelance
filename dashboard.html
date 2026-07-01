@@ -709,6 +709,7 @@
           }
           state.role = profile.role;
           state.user.name = profile.name;
+          state.user.avatar = profile.avatar || session.user.user_metadata?.avatar_url || null;
         } else {
           // If profile is missing (e.g. newly signed up Google user callback)
           const finalRole = queryRole || 'client';
