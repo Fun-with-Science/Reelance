@@ -567,7 +567,7 @@
 </footer>
 
 <!-- AVATAR CROP MODAL -->
-<div class="modal-back" id="cropBack" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+<div class="modal-back" id="cropBack" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:16px;">
   <div class="modal" style="width:100%; max-width:360px; padding:24px; background:var(--panel); border-radius:18px; border:1px solid var(--line-2); text-align:center; box-shadow:0 20px 40px -10px rgba(0,0,0,0.5)">
     <h3 style="margin-top:0; font-size:18px; font-weight:600; color:var(--text)">Crop Profile Picture</h3>
     <p style="font-size:12.5px; color:var(--muted); margin: 6px 0 16px">Drag to reposition, use slider to zoom</p>
@@ -1642,36 +1642,53 @@
     };
 
     function openCropperModal(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const modal = document.getElementById('cropBack');
-        const cropImg = document.getElementById('cropperImage');
-        const zoomRange = document.getElementById('cropZoomRange');
-        
-        cropImg.onload = () => {
-          cropperState.zoom = 1;
-          cropperState.posX = 0;
-          cropperState.posY = 0;
-          zoomRange.value = 1;
-          
-          const containerSize = 220;
-          const naturalW = cropImg.naturalWidth;
-          const naturalH = cropImg.naturalHeight;
-          
-          cropperState.baseScale = Math.max(containerSize / naturalW, containerSize / naturalH);
-          cropperState.originalImg = cropImg;
-          
-          const displayW = naturalW * cropperState.baseScale;
-          const displayH = naturalH * cropperState.baseScale;
-          cropperState.posX = (containerSize - displayW) / 2;
-          cropperState.posY = (containerSize - displayH) / 2;
-          
-          updateCropperTransform();
-          modal.classList.add('show');
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const modal = document.getElementById('cropBack');
+            const cropImg = document.getElementById('cropperImage');
+            const zoomRange = document.getElementById('cropZoomRange');
+            
+            if (!modal || !cropImg || !zoomRange) {
+              console.error("Cropper DOM elements missing!");
+              return;
+            }
+            
+            cropImg.onload = () => {
+              try {
+                cropperState.zoom = 1;
+                cropperState.posX = 0;
+                cropperState.posY = 0;
+                zoomRange.value = 1;
+                
+                const containerSize = 220;
+                const naturalW = cropImg.naturalWidth;
+                const naturalH = cropImg.naturalHeight;
+                
+                cropperState.baseScale = Math.max(containerSize / naturalW, containerSize / naturalH);
+                cropperState.originalImg = cropImg;
+                
+                const displayW = naturalW * cropperState.baseScale;
+                const displayH = naturalH * cropperState.baseScale;
+                cropperState.posX = (containerSize - displayW) / 2;
+                cropperState.posY = (containerSize - displayH) / 2;
+                
+                updateCropperTransform();
+                modal.classList.add('show');
+              } catch (err) {
+                console.error("Error in cropImg.onload:", err);
+              }
+            };
+            cropImg.src = e.target.result;
+          } catch (err) {
+            console.error("Error in reader.onload:", err);
+          }
         };
-        cropImg.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Error in openCropperModal:", err);
+      }
     }
 
     function updateCropperTransform() {
