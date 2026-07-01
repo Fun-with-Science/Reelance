@@ -581,8 +581,8 @@ function initApp() {
         : `<button class="connect" data-id="${c.id}">Connect</button>`;
 
       const avatarHTML = c.avatar
-        ? `<img src="${c.avatar}" alt="${c.name}" class="avatar" style="width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0" />`
-        : `<div class="avatar" style="background:rgba(52,224,204,0.12);color:var(--teal);width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:16px;flex-shrink:0">${initials}</div>`;
+        ? `<img src="${c.avatar}" alt="${c.name}" class="avatar" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+        : `<div class="avatar" style="background:rgba(52,224,204,0.12);color:var(--teal);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;flex-shrink:0">${initials}</div>`;
 
       card.innerHTML = `
         <div class="ccard-top" style="cursor:pointer">
@@ -741,8 +741,8 @@ function initApp() {
       `;
 
     const detailAvatarHTML = creator.avatar
-      ? `<img src="${creator.avatar}" alt="${creator.name}" style="width:80px;height:80px;border-radius:20px;object-fit:cover;flex-shrink:0" />`
-      : `<div class="avatar" style="width:80px;height:80px;border-radius:20px;font-size:26px;background:rgba(52,224,204,0.12);color:var(--teal);display:grid;place-items:center;font-weight:700;flex-shrink:0">${initials}</div>`;
+      ? `<img src="${creator.avatar}" alt="${creator.name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;flex-shrink:0" />`
+      : `<div class="avatar" style="width:80px;height:80px;border-radius:50%;font-size:26px;background:rgba(52,224,204,0.12);color:var(--teal);display:grid;place-items:center;font-weight:700;flex-shrink:0">${initials}</div>`;
 
     content.innerHTML = `
       <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap">

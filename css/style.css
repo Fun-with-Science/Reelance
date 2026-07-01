@@ -900,7 +900,7 @@ body.light-theme .nav-user .uava.role-admin {
 .avatar {
   width: 50px;
   height: 50px;
-  border-radius: 14px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   font-family: 'Space Grotesk', sans-serif;
@@ -908,6 +908,7 @@ body.light-theme .nav-user .uava.role-admin {
   font-size: 18px;
   color: #160d06;
   flex-shrink: 0;
+  overflow: hidden;
 }
 .ccard h3 { font-size: 16.5px; font-weight: 600; }
 .ccard .role { font-size: 13px; color: var(--muted); font-weight: 500; }
@@ -1466,7 +1467,7 @@ footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 54px 0 40
 .profile-avatar {
   width: 72px;
   height: 72px;
-  border-radius: 18px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   font-family: 'Space Grotesk', sans-serif;
@@ -1566,7 +1567,7 @@ footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 54px 0 40
   /* — Creator Cards — */
   .ccard { padding: 16px; }
   .ccard h3 { font-size: 15px; }
-  .avatar { width: 44px; height: 44px; font-size: 16px; border-radius: 12px; }
+  .avatar { width: 44px; height: 44px; font-size: 16px; border-radius: 50%; }
 
   /* — Pricing — */
   .pcard { padding: 26px 22px; }
@@ -1739,7 +1740,7 @@ footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 54px 0 40
   .creators { grid-template-columns: 1fr; gap: 12px; }
   .ccard { padding: 16px; border-radius: 14px; }
   .ccard-top { gap: 11px; }
-  .avatar { width: 42px; height: 42px; border-radius: 11px; font-size: 15px; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; font-size: 15px; }
   .ccard h3 { font-size: 15px; }
   .ccard .role { font-size: 12.5px; }
   .ccard .meta { margin-top: 12px; gap: 6px; }
@@ -1814,7 +1815,7 @@ footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 54px 0 40
   /* — Profile Modal — */
   .modal-lg { max-width: 100%; }
   .profile-header { flex-direction: column; text-align: center; gap: 14px; }
-  .profile-avatar { width: 60px; height: 60px; border-radius: 14px; font-size: 22px; }
+  .profile-avatar { width: 60px; height: 60px; border-radius: 50%; font-size: 22px; }
   .profile-name { font-size: 19px; }
   .profile-role { font-size: 13px; }
   .profile-meta { justify-content: center; gap: 6px; }
