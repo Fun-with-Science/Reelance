@@ -299,6 +299,7 @@ function initApp() {
   }
 
   async function checkConnectionRateLimit(clientId) {
+    const supabase = window.supabaseClient;
     if (!supabase) return true;
     const session = Auth.getState();
     if (session.user && session.user.role === 'admin') {
@@ -638,7 +639,7 @@ function initApp() {
     }
 
     // Check hourly connection rate limit (max 5)
-    const allowed = await checkConnectionRateLimit(currentUser.id);
+    const allowed = await checkConnectionRateLimit(currentUser?.id);
     if (!allowed) {
       UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
       return;
@@ -649,9 +650,16 @@ function initApp() {
     if (!creator) return;
 
     state.selectedCreatorId = creatorId;
-    document.getElementById('msgTitle').textContent = `Message ${creator.name}`;
-    document.getElementById('msgSubject').value = '';
-    document.getElementById('msgBody').value = '';
+    
+    // Safeguard DOM elements to prevent crashes on dashboard/admin page
+    const msgTitle = document.getElementById('msgTitle');
+    const msgSubject = document.getElementById('msgSubject');
+    const msgBody = document.getElementById('msgBody');
+    
+    if (msgTitle) msgTitle.textContent = `Message ${creator.name}`;
+    if (msgSubject) msgSubject.value = '';
+    if (msgBody) msgBody.value = '';
+    
     UI.openModal('msgBack');
   }
 
@@ -793,7 +801,7 @@ function initApp() {
 
     if (showWaButton) {
       const waBtn = document.getElementById('profileWhatsappBtn');
-      waBtn.addEventListener('click', async () => {
+      waBtn.addEventListener('click', () => {
         if (isSelf) return;
 
         const user = Auth.getState().user;
@@ -803,52 +811,29 @@ function initApp() {
           return;
         }
 
-        // Open window synchronously to bypass pop-up blockers
-        const waWindow = window.open('about:blank', '_blank');
-        if (!waWindow) {
-          UI.showToast('Failed to open WhatsApp. Please check your browser pop-up settings.');
-          return;
-        }
+        // 1. Get WhatsApp URL
+        const cleanPhone = creator.whatsapp.replace(/[^0-9]/g, '');
+        const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent('Hi, I found your profile on Reelance and would like to connect!')}`;
 
-        UI.setButtonLoading(waBtn, true, 'Connecting...');
+        // 2. Open WhatsApp immediately and synchronously (no popup block!)
+        window.open(waUrl, '_blank');
 
-        try {
-          // 1. Check Rate Limit
-          const allowed = await checkConnectionRateLimit(user.id);
-          if (!allowed) {
-            UI.setButtonLoading(waBtn, false, 'WhatsApp');
-            UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
-            waWindow.close();
-            return;
-          }
-
-          // 2. Insert WhatsApp System message to DB
-          if (supabase) {
-            supabase
-              .from('messages')
-              .insert({
-                sender_id: user.id,
-                sender_name: user.name,
-                sender_email: user.email,
-                recipient_id: String(creatorId),
-                subject: 'WhatsApp Connection',
-                body: '[System Notification] This client clicked your WhatsApp button to connect.'
-              })
-              .then(({ error }) => {
-                if (error) console.error("Error logging WhatsApp connection:", error);
-              });
-          }
-
-          UI.setButtonLoading(waBtn, false, 'WhatsApp');
-
-          // 3. Redirect the opened window to WhatsApp
-          const cleanPhone = creator.whatsapp.replace(/[^0-9]/g, '');
-          const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent('Hi, I found your profile on Reelance and would like to connect!')}`;
-          waWindow.location.href = waUrl;
-        } catch (err) {
-          console.error("WhatsApp redirect error:", err);
-          UI.setButtonLoading(waBtn, false, 'WhatsApp');
-          waWindow.close();
+        // 3. Log the connection to database in the background (fire-and-forget)
+        const supabase = window.supabaseClient;
+        if (supabase) {
+          supabase
+            .from('messages')
+            .insert({
+              sender_id: user.id,
+              sender_name: user.name,
+              sender_email: user.email,
+              recipient_id: String(creatorId),
+              subject: 'WhatsApp Connection',
+              body: '[System Notification] This client clicked your WhatsApp button to connect.'
+            })
+            .then(({ error }) => {
+              if (error) console.error("Error logging WhatsApp connection:", error);
+            });
         }
       });
     }
