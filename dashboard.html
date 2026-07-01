@@ -566,6 +566,36 @@
   </div>
 </footer>
 
+<!-- AVATAR CROP MODAL -->
+<div class="modal-back" id="cropBack" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+  <div class="modal" style="width:100%; max-width:360px; padding:24px; background:var(--panel); border-radius:18px; border:1px solid var(--line-2); text-align:center; box-shadow:0 20px 40px -10px rgba(0,0,0,0.5)">
+    <h3 style="margin-top:0; font-size:18px; font-weight:600; color:var(--text)">Crop Profile Picture</h3>
+    <p style="font-size:12.5px; color:var(--muted); margin: 6px 0 16px">Drag to reposition, use slider to zoom</p>
+    
+    <!-- Cropper Container -->
+    <div id="cropperContainer" style="width:220px; height:220px; margin:0 auto; position:relative; overflow:hidden; border-radius:50%; border:2px solid var(--teal); background:#0a0a0f; cursor:move">
+      <img id="cropperImage" src="" style="position:absolute; top:0; left:0; transform-origin: top left; max-width:none;" />
+      <!-- Circular overlay guide -->
+      <div style="position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 999px rgba(0,0,0,0.5); pointer-events:none"></div>
+    </div>
+    
+    <!-- Zoom Slider -->
+    <div style="margin:20px 0 24px">
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px">
+        <span>Zoom Out</span>
+        <span>Zoom In</span>
+      </div>
+      <input type="range" id="cropZoomRange" min="1" max="3" step="0.02" value="1" style="width:100%; accent-color:var(--teal)" />
+    </div>
+    
+    <!-- Action Buttons -->
+    <div style="display:flex; gap:12px">
+      <button class="btn btn-ghost" id="cropCancelBtn" style="flex:1; justify-content:center; font-size:14px; padding:10px">Cancel</button>
+      <button class="btn btn-primary" id="cropSaveBtn" style="flex:1; justify-content:center; font-size:14px; padding:10px">Crop & Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="module" src="js/ui.js"></script>
 <script type="module">
@@ -1617,7 +1647,6 @@
         const cropImg = document.getElementById('cropperImage');
         const zoomRange = document.getElementById('cropZoomRange');
         
-        cropImg.src = e.target.result;
         cropImg.onload = () => {
           cropperState.zoom = 1;
           cropperState.posX = 0;
@@ -1639,6 +1668,7 @@
           updateCropperTransform();
           modal.style.display = 'flex';
         };
+        cropImg.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -1785,35 +1815,5 @@
     initAppDashboard();
   }
 </script>
-
-<!-- AVATAR CROP MODAL -->
-<div class="modal-back" id="cropBack" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:16px;">
-  <div class="modal" style="width:100%; max-width:360px; padding:24px; background:var(--panel); border-radius:18px; border:1px solid var(--line-2); text-align:center; box-shadow:0 20px 40px -10px rgba(0,0,0,0.5)">
-    <h3 style="margin-top:0; font-size:18px; font-weight:600; color:var(--text)">Crop Profile Picture</h3>
-    <p style="font-size:12.5px; color:var(--muted); margin: 6px 0 16px">Drag to reposition, use slider to zoom</p>
-    
-    <!-- Cropper Container -->
-    <div id="cropperContainer" style="width:220px; height:220px; margin:0 auto; position:relative; overflow:hidden; border-radius:50%; border:2px solid var(--teal); background:#0a0a0f; cursor:move">
-      <img id="cropperImage" src="" style="position:absolute; top:0; left:0; transform-origin: top left; max-width:none;" />
-      <!-- Circular overlay guide -->
-      <div style="position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 999px rgba(0,0,0,0.5); pointer-events:none"></div>
-    </div>
-    
-    <!-- Zoom Slider -->
-    <div style="margin:20px 0 24px">
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px">
-        <span>Zoom Out</span>
-        <span>Zoom In</span>
-      </div>
-      <input type="range" id="cropZoomRange" min="1" max="3" step="0.02" value="1" style="width:100%; accent-color:var(--teal)" />
-    </div>
-    
-    <!-- Action Buttons -->
-    <div style="display:flex; gap:12px">
-      <button class="btn btn-ghost" id="cropCancelBtn" style="flex:1; justify-content:center; font-size:14px; padding:10px">Cancel</button>
-      <button class="btn btn-primary" id="cropSaveBtn" style="flex:1; justify-content:center; font-size:14px; padding:10px">Crop & Save</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
