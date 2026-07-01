@@ -307,11 +307,20 @@ function initApp() {
     }
     try {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      const { count, error } = await supabase
+      
+      // Race the Supabase count query against a 4-second timeout
+      const queryPromise = supabase
         .from('messages')
         .select('id', { count: 'exact', head: true })
         .eq('sender_id', clientId)
         .gte('created_at', oneHourAgo);
+        
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Rate limit check timed out')), 4000)
+      );
+
+      const response = await Promise.race([queryPromise, timeoutPromise]);
+      const { count, error } = response;
 
       if (error) {
         console.error("Error checking rate limit:", error);
@@ -319,7 +328,7 @@ function initApp() {
       }
       return count < 5;
     } catch (e) {
-      console.error("Rate limit check failed:", e);
+      console.warn("Rate limit check failed, defaulting to allowed:", e.message || e);
       return true;
     }
   }
@@ -635,13 +644,6 @@ function initApp() {
     const currentUser = Auth.getState().user;
     if (currentUser && String(currentUser.id) === String(creatorId)) {
       UI.showToast('You cannot send message inquiries to yourself.');
-      return;
-    }
-
-    // Check hourly connection rate limit (max 5)
-    const allowed = await checkConnectionRateLimit(currentUser?.id);
-    if (!allowed) {
-      UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
       return;
     }
 
