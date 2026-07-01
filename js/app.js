@@ -1459,6 +1459,7 @@ function initApp() {
     if (sendBtn) {
       sendBtn.addEventListener('click', async () => {
         if (sendBtn.disabled) return;
+
         const subject = document.getElementById('msgSubject').value.trim();
         const body = document.getElementById('msgBody').value.trim();
 
@@ -1469,6 +1470,7 @@ function initApp() {
 
         UI.setButtonLoading(sendBtn, true, 'Sending...');
 
+        const supabase = window.supabaseClient;
         if (!supabase) {
           UI.showToast('Messaging service is offline. Please check your network connection.');
           UI.setButtonLoading(sendBtn, false, 'Send message');
@@ -1483,37 +1485,51 @@ function initApp() {
           return;
         }
 
-        // Rate limit check
-        const allowed = await checkConnectionRateLimit(user.id);
-        if (!allowed) {
+        const recipientId = state.selectedCreatorId;
+        if (!recipientId || recipientId === 'undefined') {
           UI.setButtonLoading(sendBtn, false, 'Send message');
-          UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
+          UI.showToast('Error: No creator selected. Please close the modal and try again.');
           return;
         }
 
-        supabase
-          .from('messages')
-          .insert({
-            sender_id: user.id,
-            sender_name: user.name,
-            sender_email: user.email,
-            recipient_id: String(state.selectedCreatorId),
-            subject: subject,
-            body: body
-          })
-          .then(({ error }) => {
+        try {
+          // 1. Check Rate Limit
+          const allowed = await checkConnectionRateLimit(user.id);
+          if (!allowed) {
             UI.setButtonLoading(sendBtn, false, 'Send message');
-            if (error) {
-              UI.showToast('Failed to send message: ' + error.message);
-              console.error(error);
-            } else {
-              UI.closeModal('msgBack');
-              UI.showToast('Your message has been sent successfully!');
-              // Reset fields
-              document.getElementById('msgSubject').value = '';
-              document.getElementById('msgBody').value = '';
-            }
-          });
+            UI.showToast('You have reached your limit of 5 connections per hour. Please try again later.');
+            return;
+          }
+
+          // 2. Perform Insert
+          const { error } = await supabase
+            .from('messages')
+            .insert({
+              sender_id: user.id,
+              sender_name: user.name || user.email.split('@')[0] || 'Client',
+              sender_email: user.email || '',
+              recipient_id: String(recipientId),
+              subject: subject,
+              body: body
+            });
+
+          UI.setButtonLoading(sendBtn, false, 'Send message');
+
+          if (error) {
+            UI.showToast('Failed to send message: ' + error.message);
+            console.error("Supabase message insert error:", error);
+          } else {
+            UI.closeModal('msgBack');
+            UI.showToast('Your message has been sent successfully!');
+            // Reset fields
+            document.getElementById('msgSubject').value = '';
+            document.getElementById('msgBody').value = '';
+          }
+        } catch (err) {
+          UI.setButtonLoading(sendBtn, false, 'Send message');
+          UI.showToast('An unexpected error occurred while sending the message.');
+          console.error("Message send catch block error:", err);
+        }
       });
     }
   }
