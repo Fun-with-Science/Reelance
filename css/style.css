@@ -20,6 +20,7 @@
   --green: #3DFF9A;
   --grade: linear-gradient(100deg, var(--orange) 0%, #ff9d57 40%, var(--teal) 100%);
   --grade-hover: linear-gradient(100deg, #ff9d57 0%, var(--orange) 40%, var(--teal-soft) 100%);
+  --text-grade: linear-gradient(135deg, #FFFFFF 40%, #94A3B8 100%);
   --radius: 18px;
   --radius-sm: 12px;
   --shadow: 0 24px 60px -24px rgba(0,0,0,0.7);
@@ -87,15 +88,17 @@ img { display: block; max-width: 100%; }
 .btn:active { transform: translateY(1px) !important; }
 
 .btn-primary {
-  background: var(--grade);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  color: #170d06;
-  box-shadow: 0 10px 30px -10px rgba(255,123,61,0.6);
+  background: #FFFFFF;
+  color: #0B0F19 !important;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 8px 20px -6px rgba(255, 255, 255, 0.15), 0 4px 10px -4px rgba(255, 255, 255, 0.1);
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -12px rgba(255,123,61,0.7);
+  background: #F1F5F9;
+  color: #0B0F19 !important;
+  box-shadow: 0 12px 28px -8px rgba(255, 255, 255, 0.25);
 }
 
 .btn-ghost {
@@ -350,7 +353,7 @@ nav.links a:hover::after { transform: scaleX(1); }
   max-width: 14ch;
 }
 .hero h1 .grad {
-  background: var(--grade);
+  background: var(--text-grade);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -402,7 +405,7 @@ nav.links a:hover::after { transform: scaleX(1); }
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(24px, 3vw, 36px);
   font-weight: 700;
-  background: var(--grade);
+  background: var(--text-grade);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1000,7 +1003,7 @@ nav.links a:hover::after { transform: scaleX(1); }
   font-family: 'Space Grotesk', sans-serif;
   font-size: 48px;
   line-height: 1;
-  background: var(--grade);
+  background: var(--text-grade);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1082,7 +1085,7 @@ nav.links a:hover::after { transform: scaleX(1); }
   font-size: 44px;
   font-weight: 700;
   margin: 16px 0 4px;
-  background: var(--grade);
+  background: var(--text-grade);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1966,6 +1969,7 @@ body.light-theme {
   --orange: #EA580C; /* rich dark orange (orange-600) for legibility */
   --teal: #0D9488; /* rich dark teal (teal-600) for legibility */
   --green: #16A34A; /* rich dark green (green-600) */
+  --text-grade: linear-gradient(135deg, #0F172A 30%, #475569 100%);
   --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 16px -6px rgba(15, 23, 42, 0.05);
   --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
 }
@@ -1997,13 +2001,17 @@ body.light-theme .freeline {
   border-color: rgba(13, 148, 136, 0.2);
 }
 
-/* Primary Button White Text Override */
+/* Primary Button Slate/Charcoal Override in Light Theme */
 body.light-theme .btn-primary {
+  background: #0F172A !important;
   color: #FFFFFF !important;
-  box-shadow: 0 10px 25px -10px rgba(234, 88, 12, 0.4);
+  box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.2), 0 4px 10px -4px rgba(15, 23, 42, 0.15) !important;
+  border: none !important;
 }
 body.light-theme .btn-primary:hover {
-  box-shadow: 0 16px 35px -12px rgba(234, 88, 12, 0.55);
+  background: #1E293B !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 12px 28px -8px rgba(15, 23, 42, 0.3) !important;
 }
 
 /* Glassmorphism overrides for cards and header in light mode */
@@ -2020,12 +2028,14 @@ body.light-theme .ccard:hover {
   box-shadow: 0 20px 40px -10px rgba(31, 38, 135, 0.1);
 }
 body.light-theme header.nav {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 20px -5px rgba(15, 23, 42, 0.05) !important;
 }
 body.light-theme header.nav.scrolled {
-  box-shadow: 0 10px 20px -10px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* Modal and dialog glassmorphic background for light mode */
