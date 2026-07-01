@@ -1978,12 +1978,12 @@ body.light-theme::before {
 
 /* Top Promo Banner Legibility */
 body.light-theme .top-promo-banner {
-  background: #F1F5F9 !important;
-  border-bottom: 1px solid #E2E8F0 !important;
-  color: #334155 !important;
+  background: #0F172A !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: #E2E8F0 !important;
 }
 body.light-theme .top-promo-banner b {
-  color: #EA580C !important;
+  color: #34E0CC !important; /* bright brand teal for high contrast */
 }
 
 /* Hero Freeline Subtext Contrast */
